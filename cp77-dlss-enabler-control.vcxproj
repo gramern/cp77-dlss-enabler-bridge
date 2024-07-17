@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{a58e1dd0-596d-43fa-8659-8a1fd5a7312e}</ProjectGuid>
-    <RootNamespace>cp77dlssenablerfgcontrol</RootNamespace>
+    <RootNamespace>cp77dlssenablercontrol</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>cp77-dlss-enabler-control</ProjectName>
   </PropertyGroup>
@@ -143,13 +143,13 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="include\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="VersionInfo.rc" />
+    <ResourceCompile Include="resource\VersionInfo.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
