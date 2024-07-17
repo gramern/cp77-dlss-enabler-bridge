@@ -6,6 +6,7 @@
 *.opensdf
 *.VC.db
 *.VC.opendb
+*.aps
 
 # Build results
 [Dd]ebug/
