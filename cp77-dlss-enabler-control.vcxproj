@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\Users\Grzegorz\source\repos\RED4ext.SDK\build\Release</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\RED4ext.SDK\build\$(Configuration)</LibraryPath>
     <TargetName>DLSSEnablerControlInterface</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -109,14 +109,14 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Grzegorz\source\repos\RED4ext.SDK\include;C:\Users\Grzegorz\source\repos\RED4ext.SDK\vendor;C:\Users\Grzegorz\source\repos\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RED4ext.SDK\include;..\RED4ext.SDK\vendor;..\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);RED4EXT_STATIC_LIB</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Grzegorz\source\repos\RED4ext.SDK\build\lib\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);RED4ext.SDK.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\RED4ext.SDK\build\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +127,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Grzegorz\source\repos\RED4ext.SDK\include;C:\Users\Grzegorz\source\repos\RED4ext.SDK\vendor;C:\Users\Grzegorz\source\repos\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RED4ext.SDK\include;..\RED4ext.SDK\vendor;..\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);RED4EXT_STATIC_LIB</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -135,11 +135,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Grzegorz\source\repos\RED4ext.SDK\build\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);RED4ext.SDK.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\RED4ext.SDK\build\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
