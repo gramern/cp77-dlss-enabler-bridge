@@ -1,4 +1,4 @@
-# DLSS Enabler Frame Generation Control
+# DLSS Enabler Control Interface
 
 A mod for Cyberpunk 2077 to control Frame Generation via DLSS Enabler API.
 
