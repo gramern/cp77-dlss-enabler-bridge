@@ -25,13 +25,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="resources\VersionInfo.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="include\resource.h">
       <Filter>include</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="resource\VersionInfo.rc">
-      <Filter>resources</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

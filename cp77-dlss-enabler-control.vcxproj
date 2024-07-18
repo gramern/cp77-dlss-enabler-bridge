@@ -149,7 +149,7 @@
     <ClInclude Include="include\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resource\VersionInfo.rc" />
+    <ResourceCompile Include="resources\VersionInfo.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

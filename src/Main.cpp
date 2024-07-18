@@ -29,7 +29,7 @@ void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSta
     bool shouldEnable;
     RED4ext::GetParameter(aFrame, &shouldEnable);
 
-    sdk->logger->InfoF(handle, "DLSSEnablerSetFrameGeneration called with shouldEnable = %s", shouldEnable ? "true" : "false");
+    //sdk->logger->InfoF(handle, "DLSSEnablerSetFrameGeneration called with shouldEnable = %s", shouldEnable ? "true" : "false");
 
     HMODULE hDll = LoadLibraryW(L"dlss-enabler.dll");
     if (!hDll)
@@ -40,7 +40,7 @@ void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSta
         return;
     }
 
-    sdk->logger->InfoF(handle, "dlss-enabler.dll loaded successfully");
+    //sdk->logger->InfoF(handle, "dlss-enabler.dll loaded successfully");
 
     SetFrameGenerationModeFunc SetFrameGenerationMode = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
 
@@ -53,14 +53,14 @@ void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSta
         return;
     }
 
-    sdk->logger->InfoF(handle, "SetFrameGenerationMode function address obtained successfully");
+    //sdk->logger->InfoF(handle, "SetFrameGenerationMode function address obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode newMode = shouldEnable ? DLSS_Enabler_FrameGeneration_Enabled : DLSS_Enabler_FrameGeneration_Disabled;
     DLSS_Enabler_Result result = SetFrameGenerationMode(newMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
-        sdk->logger->InfoF(handle, "Frame Generation Mode set to %s", shouldEnable ? "Enabled" : "Disabled");
+        //sdk->logger->InfoF(handle, "Frame Generation Mode set to %s", shouldEnable ? "Enabled" : "Disabled");
         if (aOut) *aOut = true;
     }
     else
@@ -70,7 +70,7 @@ void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSta
     }
 
     FreeLibrary(hDll);
-    sdk->logger->InfoF(handle, "DLSSEnablerSetFrameGeneration completed");
+    //sdk->logger->InfoF(handle, "DLSSEnablerSetFrameGeneration completed");
 
     aFrame->code++; // skip ParamEnd
 }
@@ -81,7 +81,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
     RED4EXT_UNUSED_PARAMETER(aFrame);
     RED4EXT_UNUSED_PARAMETER(a4);
 
-    sdk->logger->InfoF(handle, "DLSSEnablerToggleFrameGeneration called!");
+    //sdk->logger->InfoF(handle, "DLSSEnablerToggleFrameGeneration called!");
 
     HMODULE hDll = LoadLibraryW(L"dlss-enabler.dll");
     if (!hDll)
@@ -92,7 +92,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
         return;
     }
 
-    sdk->logger->InfoF(handle, "dlss-enabler.dll loaded successfully");
+    //sdk->logger->InfoF(handle, "dlss-enabler.dll loaded successfully");
 
     GetFrameGenerationModeFunc GetFrameGenerationMode = (GetFrameGenerationModeFunc)GetProcAddress(hDll, "GetFrameGenerationMode");
     SetFrameGenerationModeFunc SetFrameGenerationMode = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
@@ -106,7 +106,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
         return;
     }
 
-    sdk->logger->InfoF(handle, "Function addresses obtained successfully");
+    //sdk->logger->InfoF(handle, "Function addresses obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
     DLSS_Enabler_Result result = GetFrameGenerationMode(currentMode);
@@ -119,14 +119,14 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
         return;
     }
 
-    sdk->logger->InfoF(handle, "Current Frame Generation Mode: %d", currentMode);
+    //sdk->logger->InfoF(handle, "Current Frame Generation Mode: %d", currentMode);
 
     if (currentMode == DLSS_Enabler_FrameGeneration_Disabled)
     {
         result = SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Enabled);
         if (result == DLSS_Enabler_Result_Success)
         {
-            sdk->logger->InfoF(handle, "Frame Generation Mode set to Enabled");
+            //sdk->logger->InfoF(handle, "Frame Generation Mode set to Enabled");
             if (aOut) *aOut = true;
         }
         else
@@ -140,7 +140,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
         result = SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Disabled);
         if (result == DLSS_Enabler_Result_Success)
         {
-            sdk->logger->InfoF(handle, "Frame Generation Mode set to Disabled");
+            //sdk->logger->InfoF(handle, "Frame Generation Mode set to Disabled");
             if (aOut) *aOut = true;
         }
         else
@@ -156,7 +156,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
     }
 
     FreeLibrary(hDll);
-    sdk->logger->InfoF(handle, "DLSSEnablerToggleFrameGeneration completed");
+    //sdk->logger->InfoF(handle, "DLSSEnablerToggleFrameGeneration completed");
 }
 
 RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes()
@@ -171,12 +171,12 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
     func->AddParam("Bool", "shouldEnable");
     func->SetReturnType("Bool");
     rtti->RegisterFunction(func);
-    sdk->logger->InfoF(handle, "DLSSEnablerSetFrameGeneration registered!");
+    //sdk->logger->InfoF(handle, "DLSSEnablerSetFrameGeneration registered!");
 
     auto toggleFunc = RED4ext::CGlobalFunction::Create("DLSSEnablerToggleFrameGeneration", "DLSSEnablerToggleFrameGeneration", &DLSSEnablerToggleFrameGeneration);
     toggleFunc->SetReturnType("Bool");
     rtti->RegisterFunction(toggleFunc);
-    sdk->logger->InfoF(handle, "DLSSEnablerToggleFrameGeneration registered!");
+    //sdk->logger->InfoF(handle, "DLSSEnablerToggleFrameGeneration registered!");
 }
 
 RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::EMainReason aReason, const RED4ext::Sdk* aSdk)
@@ -207,7 +207,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Control Interface";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 2, 0, 0);
+    aInfo->version = RED4EXT_SEMVER(0, 2, 0, 1);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }
