@@ -16,8 +16,23 @@ build/
 [Bb]in/
 [Oo]bj/
 
+# Resource compiler temporary files
+RC*
+[Rr]esources/[Rr][Cc]*
+
 # NuGet packages
 packages/
+
+# CMake
+[Cc]make[Bb]uild*/
+
+# Code coverage and profiling
+*.opencover.xml
+*.dotCover
+
+# IDE and editor files
+.vscode/
+*.swp
 
 # Other
 *.log
