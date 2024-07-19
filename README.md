@@ -16,7 +16,7 @@ See [methods.md](docs/methods.md) for details.
 + [RED4ext](https://github.com/WopsS/RED4ext) 1.25.0+
 
 ## Installation
-Place the `DLSSEnablerControlInterface.dll` file in the `..\Cyberpunk 2077\red4ext\plugins\DLSSEnablerControlInterface` folder or unzip the archive to the game folder.
+Place the `dlss-enabler-control-interface-2077.dll` file in the `..\Cyberpunk 2077\red4ext\plugins\DLSSEnablerControlInterface2077` folder or unzip the archive to the game folder.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
