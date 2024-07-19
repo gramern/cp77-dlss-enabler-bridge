@@ -1,11 +1,14 @@
-# DLSS Enabler Control Interface
+# DLSS Enabler Control Interface 2077
 
 A mod for Cyberpunk 2077 to control Frame Generation via DLSS Enabler API.
 
 ## Features
-Adds global methods that can be called from other mods/CET Console:
+Adds global methods that can be called from other mods/CET's console:
+- `DLSSEnablerGetFrameGeneration()`: get Frame Generation state (on/ff)
+- `DLSSEnablerSetFrameGeneration(bool)`: set Frame Generation to a specific state (on/ff)
 - `DLSSEnablerToggleFrameGeneration()`: toggle Frame Generation on/off
-- `DLSSEnablerSetFrameGeneration(bool)`: set DLSS Frame Generation to a specific state (on/ff)
+
+See [methods.md](docs/methods.md) for details.
 
 ## Requirements
 + Cyberpunk 2.12+
