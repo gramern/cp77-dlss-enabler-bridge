@@ -1,6 +1,6 @@
 # Methods
 
-All methods are global and can be called at any moment of the game after the mod is initilized by RED4ext. They require DLSS Enabler to be installed and Frame Generation enabled in the game.
+All methods are global and can be called at any moment of the game after the mod is initialized by RED4ext. They require DLSS Enabler to be installed and Frame Generation enabled in the game.
 
 ## DLSSEnablerGetFrameGenerationState()
 
@@ -15,7 +15,7 @@ Bool - True if DLSS Frame Generation is currently enabled, False if it's disable
 
 ### Exemplary Usage (CET-lua):
 ```
-local is Enabled = DLSSEnablerGetFrameGenerationState()
+local isEnabled = DLSSEnablerGetFrameGenerationState()
 
 if isEnabled then
     print("Frame Generation is currently enabled")
