@@ -1,6 +1,6 @@
 # Methods
 
-All methods are global and can be called at any moment of the game after the mod is initialized by RED4ext. They require DLSS Enabler to be installed and Frame Generation enabled in the game.
+All methods are global and can be called at any moment of the game after the plugin is initialized by RED4ext. They require DLSS Enabler to be installed and Frame Generation enabled in the game.
 
 ## DLSSEnabler_GetFrameGenerationState()
 
