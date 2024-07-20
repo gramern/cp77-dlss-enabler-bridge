@@ -4,9 +4,9 @@ A mod for Cyberpunk 2077 to control Frame Generation state via DLSS Enabler's AP
 
 ## Features
 Adds global methods that can be called from other mods/CET's console:
-- `DLSSEnablerGetFrameGeneration()`: get Frame Generation state (on/off)
-- `DLSSEnablerSetFrameGeneration(bool)`: set Frame Generation to a specific state (on/off)
-- `DLSSEnablerToggleFrameGeneration()`: toggle Frame Generation on/off
+- `DLSSEnabler_GetFrameGeneration()`: get Frame Generation state (on/off)
+- `DLSSEnabler_SetFrameGeneration(bool)`: set Frame Generation to a specific state (on/off)
+- `DLSSEnabler_ToggleFrameGeneration()`: toggle Frame Generation on/off
 
 See [methods.md](docs/methods.md) for details.
 

@@ -2,7 +2,7 @@
 
 All methods are global and can be called at any moment of the game after the mod is initialized by RED4ext. They require DLSS Enabler to be installed and Frame Generation enabled in the game.
 
-## DLSSEnablerGetFrameGenerationState()
+## DLSSEnabler_GetFrameGenerationState()
 
 ### Description:
 Retrieves the current state of Frame Generation in Cyberpunk 2077 with DLSS Enabler installed.
@@ -15,7 +15,7 @@ Bool - True if DLSS Frame Generation is currently enabled, False if it's disable
 
 ### Exemplary Usage (CET-lua):
 ```
-local isEnabled = DLSSEnablerGetFrameGenerationState()
+local isEnabled = DLSSEnabler_GetFrameGenerationState()
 
 if isEnabled then
     print("Frame Generation is currently enabled")
@@ -24,7 +24,7 @@ else
 end
 ```
 
-## DLSSEnablerSetFrameGeneration(bool shouldEnable)
+## DLSSEnabler_SetFrameGeneration(bool shouldEnable)
 
 ### Description:
 Sets the Frame Generation state in Cyberpunk 2077 with DLSS Enabler installed to either enabled or disabled.
@@ -38,7 +38,7 @@ Bool - True if the operation was successful, False otherwise.
 ### Exemplary Usage (CET-lua):
 ```
 -- To enable Frame Generation
-local result = DLSSEnablerSetFrameGeneration(true)
+local result = DLSSEnabler_SetFrameGeneration(true)
 
 if result then
     print("Frame Generation enabled successfully")
@@ -49,7 +49,7 @@ end
 
 ```
 -- To disable Frame Generation
-local result = DLSSEnablerSetFrameGeneration(false)
+local result = DLSSEnabler_SetFrameGeneration(false)
 
 if result then
     print("Frame Generation disabled successfully")
@@ -58,7 +58,7 @@ else
 end
 ```
 
-## DLSSEnablerToggleFrameGeneration()
+## DLSSEnabler_ToggleFrameGeneration()
 
 ### Description:
 Toggles the Frame Generation state in Cyberpunk 2077 with DLSS Enabler installed. If Frame Generation is currently enabled, this function will disable it, and vice versa.
@@ -71,7 +71,7 @@ Bool - True if the operation was successful, False otherwise.
 
 ### Exemplary Usage (CET-lua):
 ```
-local result = DLSSEnablerToggleFrameGeneration()
+local result = DLSSEnabler_ToggleFrameGeneration()
 
 if result then
     print("Frame Generation state toggled successfully")
