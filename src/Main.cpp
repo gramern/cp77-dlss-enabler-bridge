@@ -1,4 +1,4 @@
-#include <iostream>
+#include <windows.h>
 #include <RED4ext/RED4ext.hpp>
 
 const RED4ext::Sdk* sdk;
@@ -20,34 +20,66 @@ typedef enum DLSS_Enabler_Result
 typedef DLSS_Enabler_Result(*GetFrameGenerationModeFunc)(DLSS_Enabler_FrameGeneration_Mode& mode);
 typedef DLSS_Enabler_Result(*SetFrameGenerationModeFunc)(DLSS_Enabler_FrameGeneration_Mode mode);
 
+static HMODULE hDll;
+static GetFrameGenerationModeFunc g_GetFrameGenerationMode = nullptr;
+static SetFrameGenerationModeFunc g_SetFrameGenerationMode = nullptr;
+
+bool DLSSEnablerOnInitialize()
+{
+    hDll = LoadLibraryW(L"dlss-enabler.dll");
+    if (!hDll)
+    {
+        DWORD error = GetLastError();
+        sdk->logger->ErrorF(handle, "[DLSSEnablerControlInterface] Failed to load dlss-enabler.dll. Error code: %lu", error);
+        return false;
+    }
+
+    //sdk->logger->InfoF(handle, "[DLSSEnablerOnInitialize] dlss-enabler.dll loaded successfully");
+
+    g_GetFrameGenerationMode = (GetFrameGenerationModeFunc)GetProcAddress(hDll, "GetFrameGenerationMode");
+    g_SetFrameGenerationMode = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
+
+    if (!g_GetFrameGenerationMode || !g_SetFrameGenerationMode)
+    {
+        DWORD error = GetLastError();
+        sdk->logger->ErrorF(handle, "[DLSSEnablerControlInterface] Failed to get function addresses. Error code: %lu", error);
+        FreeLibrary(hDll);
+        return false;
+    }
+
+    //sdk->logger->InfoF(handle, "[DLSSEnablerOnInitialize] Plugin has loaded succesfully");
+
+    return true;
+}
+
+void DLSSEnablerOnUninitialize()
+{
+    if (hDll)
+    {
+        g_GetFrameGenerationMode = nullptr;
+        g_SetFrameGenerationMode = nullptr;
+        FreeLibrary(hDll);
+    }
+}
+
 void DLSSEnablerGetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(aFrame);
     RED4EXT_UNUSED_PARAMETER(a4);
 
-    HMODULE hDll = LoadLibraryW(L"dlss-enabler.dll");
-    if (!hDll)
-    {
-        DWORD error = GetLastError();
-        sdk->logger->ErrorF(handle, "[DLSSEnablerGetFrameGenerationState] Failed to load dlss-enabler.dll. Error code: %lu", error);
-        if (aOut) *aOut = false;
-        return;
-    }
+    //sdk->logger->InfoF(handle, "[DLSSEnablerGetFrameGeneration] called!");
 
-    GetFrameGenerationModeFunc GetFrameGenerationMode = (GetFrameGenerationModeFunc)GetProcAddress(hDll, "GetFrameGenerationMode");
-
-    if (!GetFrameGenerationMode)
+    if (!g_GetFrameGenerationMode)
     {
         DWORD error = GetLastError();
         sdk->logger->ErrorF(handle, "[DLSSEnablerGetFrameGenerationState] Failed to get GetFrameGenerationMode function address. Error code: %lu", error);
-        FreeLibrary(hDll);
         if (aOut) *aOut = false;
         return;
     }
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = GetFrameGenerationMode(currentMode);
+    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -59,39 +91,28 @@ void DLSSEnablerGetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext:
         if (aOut) *aOut = false;
     }
 
-    FreeLibrary(hDll);
+    //sdk->logger->InfoF(handle, "[DLSSEnablerGetFrameGeneration] Completed");
+
     aFrame->code++; // skip ParamEnd
 }
 
 void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
+    RED4EXT_UNUSED_PARAMETER(aFrame);
     RED4EXT_UNUSED_PARAMETER(a4);
 
     // Get the boolean parameter
     bool shouldEnable;
     RED4ext::GetParameter(aFrame, &shouldEnable);
+    aFrame->code++; // skip ParamEnd
 
     //sdk->logger->InfoF(handle, "[DLSSEnablerSetFrameGeneration] Called with shouldEnable = %s", shouldEnable ? "true" : "false");
 
-    HMODULE hDll = LoadLibraryW(L"dlss-enabler.dll");
-    if (!hDll)
-    {
-        DWORD error = GetLastError();
-        sdk->logger->ErrorF(handle, "[DLSSEnablerSetFrameGeneration] Failed to load dlss-enabler.dll. Error code: %lu", error);
-        if (aOut) *aOut = false;
-        return;
-    }
-
-    //sdk->logger->InfoF(handle, "[DLSSEnablerSetFrameGeneration] dlss-enabler.dll loaded successfully");
-
-    SetFrameGenerationModeFunc SetFrameGenerationMode = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
-
-    if (!SetFrameGenerationMode)
+    if (!g_SetFrameGenerationMode)
     {
         DWORD error = GetLastError();
         sdk->logger->ErrorF(handle, "[DLSSEnablerSetFrameGeneration] Failed to get SetFrameGenerationMode function address. Error code: %lu", error);
-        FreeLibrary(hDll);
         if (aOut) *aOut = false;
         return;
     }
@@ -99,7 +120,7 @@ void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSta
     //sdk->logger->InfoF(handle, "[DLSSEnablerSetFrameGeneration] SetFrameGenerationMode function address obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode newMode = shouldEnable ? DLSS_Enabler_FrameGeneration_Enabled : DLSS_Enabler_FrameGeneration_Disabled;
-    DLSS_Enabler_Result result = SetFrameGenerationMode(newMode);
+    DLSS_Enabler_Result result = g_SetFrameGenerationMode(newMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -112,10 +133,7 @@ void DLSSEnablerSetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSta
         if (aOut) *aOut = false;
     }
 
-    FreeLibrary(hDll);
     //sdk->logger->InfoF(handle, "[DLSSEnablerSetFrameGeneration] Completed");
-
-    aFrame->code++; // skip ParamEnd
 }
 
 void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
@@ -126,25 +144,10 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
 
     //sdk->logger->InfoF(handle, "[DLSSEnablerToggleFrameGeneration] called!");
 
-    HMODULE hDll = LoadLibraryW(L"dlss-enabler.dll");
-    if (!hDll)
-    {
-        DWORD error = GetLastError();
-        sdk->logger->ErrorF(handle, "[DLSSEnablerToggleFrameGeneration] Failed to load dlss-enabler.dll. Error code: %lu", error);
-        if (aOut) *aOut = false;
-        return;
-    }
-
-    //sdk->logger->InfoF(handle, "[DLSSEnablerToggleFrameGeneration] dlss-enabler.dll loaded successfully");
-
-    GetFrameGenerationModeFunc GetFrameGenerationMode = (GetFrameGenerationModeFunc)GetProcAddress(hDll, "GetFrameGenerationMode");
-    SetFrameGenerationModeFunc SetFrameGenerationMode = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
-
-    if (!GetFrameGenerationMode || !SetFrameGenerationMode)
+    if (!g_GetFrameGenerationMode || !g_SetFrameGenerationMode)
     {
         DWORD error = GetLastError();
         sdk->logger->ErrorF(handle, "[DLSSEnablerToggleFrameGeneration] Failed to get function addresses. Error code: %lu", error);
-        FreeLibrary(hDll);
         if (aOut) *aOut = false;
         return;
     }
@@ -152,12 +155,11 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
     //sdk->logger->InfoF(handle, "[DLSSEnablerToggleFrameGeneration] Function addresses obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = GetFrameGenerationMode(currentMode);
+    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
 
     if (result != DLSS_Enabler_Result_Success)
     {
         sdk->logger->ErrorF(handle, "[DLSSEnablerToggleFrameGeneration] GetFrameGenerationMode failed with result: %d", result);
-        FreeLibrary(hDll);
         if (aOut) *aOut = false;
         return;
     }
@@ -166,7 +168,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
 
     if (currentMode == DLSS_Enabler_FrameGeneration_Disabled)
     {
-        result = SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Enabled);
+        result = g_SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Enabled);
         if (result == DLSS_Enabler_Result_Success)
         {
             //sdk->logger->InfoF(handle, "[DLSSEnablerToggleFrameGeneration] Frame Generation Mode set to Enabled");
@@ -180,7 +182,7 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
     }
     else if (currentMode == DLSS_Enabler_FrameGeneration_Enabled)
     {
-        result = SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Disabled);
+        result = g_SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Disabled);
         if (result == DLSS_Enabler_Result_Success)
         {
             //sdk->logger->InfoF(handle, "[DLSSEnablerToggleFrameGeneration] Frame Generation Mode set to Disabled");
@@ -198,8 +200,9 @@ void DLSSEnablerToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::C
         if (aOut) *aOut = false;
     }
 
-    FreeLibrary(hDll);
     //sdk->logger->InfoF(handle, "[DLSSEnablerToggleFrameGeneration] Completed");
+
+    aFrame->code++; // skip ParamEnd
 }
 
 RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes()
@@ -240,10 +243,16 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
 
         rtti->AddRegisterCallback(RegisterTypes);
         rtti->AddPostRegisterCallback(PostRegisterTypes);
+
+        if (!DLSSEnablerOnInitialize())
+        {
+            sdk->logger->Error(handle, "[DLSSEnabler] Failed to initialize. Plugin may not function correctly.");
+        }
         break;
     }
     case RED4ext::EMainReason::Unload:
     {
+        DLSSEnablerOnUninitialize();
         break;
     }
     }
@@ -255,7 +264,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Control Interface 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 3, 0, 1);
+    aInfo->version = RED4EXT_SEMVER(0, 3, 1, 1);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }
