@@ -1,6 +1,6 @@
 # DLSS Enabler Control Interface 2077
 
-A mod for Cyberpunk 2077 to control Frame Generation state via DLSS Enabler's API.
+A RED4ext plugin for Cyberpunk 2077 to control Frame Generation state via DLSS Enabler's API.
 
 ## Features
 Adds global methods that can be called from other mods/CET's console:
