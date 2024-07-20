@@ -13,11 +13,17 @@
     <Filter Include="include\external-libraries">
       <UniqueIdentifier>{35e3e801-627c-4037-aec7-4912f685573d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="docs">
+      <UniqueIdentifier>{8e9cb28e-05a9-4250-b033-5b891804dd8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE.md" />
     <None Include="README.md" />
     <None Include=".gitignore" />
+    <None Include="docs\methods.md">
+      <Filter>docs</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">

@@ -156,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="docs\methods.md" />
     <None Include="LICENSE.md" />
     <None Include="README.md" />
   </ItemGroup>

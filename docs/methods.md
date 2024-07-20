@@ -58,6 +58,40 @@ else
 end
 ```
 
+## DLSSEnabler_SetDynamicFrameGeneration(bool shouldEnable)
+
+### Description:
+Sets the Dynamic Frame Generation state in Cyberpunk 2077 with DLSS Enabler installed to either enabled or disabled.
+
+### Parameters:
+shouldEnable (Bool) - True to enable Dynamic Frame Generation, False to disable it.
+
+### Returns:
+Bool - True if the operation was successful, False otherwise.
+
+### Exemplary Usage (CET-lua):
+```
+-- To enable Dynamic Frame Generation
+local result = DLSSEnabler_SetDynamicFrameGeneration(true)
+
+if result then
+    print("Dynamic Frame Generation enabled successfully")
+else
+    print("Failed to enable Dynamic Frame Generation")
+end
+```
+
+```
+-- To disable Dynamic Frame Generation
+local result = DLSSEnabler_SetDynamicFrameGeneration(false)
+
+if result then
+    print("Dynamic Frame Generation disabled successfully")
+else
+    print("Failed to disable Dynamic Frame Generation")
+end
+```
+
 ## DLSSEnabler_ToggleFrameGeneration()
 
 ### Description:
@@ -81,7 +115,7 @@ end
 ```
 
 ## Logging
-Errors codes below are the same for all methods and follow DLSS Enabler's API and `DLSS_Enabler_Result`:
+Results codes are the same for all methods and follow DLSS Enabler's API and `DLSS_Enabler_Result` below:
 ```
 ﻿typedef enum DLSS_Enabler_Result
 {
