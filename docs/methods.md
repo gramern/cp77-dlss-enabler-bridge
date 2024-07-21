@@ -7,6 +7,9 @@ All methods are global and can be called at any moment of the game after the plu
 ### Description:
 Retrieves the current state of Frame Generation in Cyberpunk 2077 with DLSS Enabler installed.
 
+### Required DLSS Enabler Version:
+2.90.800.0+
+
 ### Parameters:
 None
 
@@ -28,6 +31,9 @@ end
 
 ### Description:
 Sets the Frame Generation state in Cyberpunk 2077 with DLSS Enabler installed to either enabled or disabled.
+
+### Required DLSS Enabler Version:
+2.90.800.0+
 
 ### Parameters:
 shouldEnable (Bool) - True to enable Frame Generation, False to disable it.
@@ -63,6 +69,9 @@ end
 ### Description:
 Sets the Dynamic Frame Generation state in Cyberpunk 2077 with DLSS Enabler installed to either enabled or disabled.
 
+### Required DLSS Enabler Version:
+3.01.000.0-b10+
+
 ### Parameters:
 shouldEnable (Bool) - True to enable Dynamic Frame Generation, False to disable it.
 
@@ -96,6 +105,9 @@ end
 
 ### Description:
 Toggles the Frame Generation state in Cyberpunk 2077 with DLSS Enabler installed. If Frame Generation is currently enabled, this function will disable it, and vice versa.
+
+### Required DLSS Enabler Version:
+2.90.800.0+
 
 ### Parameters:
 None
