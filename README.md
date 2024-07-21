@@ -1,4 +1,4 @@
-# DLSS Enabler Control Interface 2077
+# DLSS Enabler Bridge 2077
 
 A RED4ext plugin for Cyberpunk 2077 to control Frame Generation state via DLSS Enabler's API.
 
@@ -17,7 +17,7 @@ See [methods.md](docs/methods.md) for details.
 + [RED4ext](https://github.com/WopsS/RED4ext) 1.25.0+
 
 ## Installation
-Place the `dlss-enabler-control-interface-2077.dll` file in the `..\Cyberpunk 2077\red4ext\plugins\DLSSEnablerControlInterface2077` folder or unzip the archive to the game folder.
+Place the `dlss-enabler-bridge-2077.dll` file in the `..\your Cybrepunk 2077 folder\red4ext\plugins\DLSSEnablerBridge2077` folder or unzip the archive to the game folder.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
