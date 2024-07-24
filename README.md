@@ -9,7 +9,7 @@ Adds global methods that can be called from other mods/CET's console:
 - `DLSSEnabler_GetFrameGenerationState()`: get Frame Generation state (on/off)
 - `DLSSEnabler_SetFrameGenerationState(bool shouldEnable)`: set Frame Generation to a specific state (on/off)
 - `DLSSEnabler_ToggleFrameGenerationState()`: toggle Frame Generation (on/off)
-- `DLSSEnabler_GetDynamicFrameGenerationState()`: get Frame Generation state (on/off)
+- `DLSSEnabler_GetDynamicFrameGenerationState()`: get Dynamic Frame Generation state (on/off)
 - `DLSSEnabler_SetDynamicFrameGenerationState(bool shouldEnable)`: set Dynamic Frame Generation to a specific state (on/off)
 
 See [methods.md](docs/methods.md) for details.
