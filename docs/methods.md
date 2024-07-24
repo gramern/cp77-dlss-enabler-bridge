@@ -2,7 +2,7 @@
 
 All methods are global and can be called at any moment of the game after the plugin is initialized by RED4ext. They require DLSS Enabler to be installed and Frame Generation enabled in the game.
 
-**NOTE:** _All methods don't retrieve or set Frame Generation Mode/State as it is in the game settings, but as it is in the current running instance of DLSS Enabler._
+**NOTE:** _All methods retrieve or set Frame Generation Mode/State as it is in the current running instance of DLSS Enabler. The game's Frame Generation State remains the same as set in the game's settings._
 
 # Frame Generation Mode
 
