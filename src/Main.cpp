@@ -74,6 +74,68 @@ void DLSSEnabler_OnUninitialize()
     }
 }
 
+void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, int32_t* aOut, int64_t a4)
+{
+    RED4EXT_UNUSED_PARAMETER(aContext);
+    RED4EXT_UNUSED_PARAMETER(aFrame);
+    RED4EXT_UNUSED_PARAMETER(a4);
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Called!");
+    }
+
+    if (!g_GetFrameGenerationMode || !hDll)
+    {
+        DWORD error = GetLastError();
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_GetFrameGenerationMode] Failed to get GetFrameGenerationMode function address. Error code: %lu", error);
+        if (aOut) *aOut = DLSS_Enabler_Result_Fail_Unsupported;
+        return;
+    }
+
+    DLSS_Enabler_FrameGeneration_Mode currentMode;
+    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
+
+    if (result == DLSS_Enabler_Result_Success)
+    {
+        if (g_deBridgeDebug)
+        {
+            const char* modeString;
+            switch (currentMode)
+            {
+            case DLSS_Enabler_FrameGeneration_Disabled:
+                modeString = "FG Disabled; DFG Disabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_Enabled:
+                modeString = "FG Enabled; DFG Disabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_DFG_Disabled:
+                modeString = "FG Unknown; DFG Disabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_DFG_Enabled:
+                modeString = "FG Unknown; DFG Enabled";
+                break;
+            default:
+                modeString = "Unknown";
+            }
+
+            sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Current Frame Generation Mode: %s", modeString);
+        }
+
+        if (aOut) *aOut = currentMode;
+    }
+    else
+    {
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_GetFrameGenerationMode] Failed to get Frame Generation Mode. Result: %d", result);
+        if (aOut) *aOut = -1;
+    }
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Completed");
+    }
+}
+
 void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
@@ -103,11 +165,11 @@ void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
             const char* modeString;
             switch (currentMode)
             {
-            case DLSS_Enabler_FrameGeneration_Disabled:
-                modeString = "Disabled";
-                break;
             case DLSS_Enabler_FrameGeneration_Enabled:
                 modeString = "Enabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_Disabled:
+                modeString = "Disabled";
                 break;
             default:
                 modeString = "Unknown";
@@ -130,13 +192,133 @@ void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
     }
 }
 
-void DLSSEnabler_SetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
+void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
+{
+    RED4EXT_UNUSED_PARAMETER(aContext);
+    RED4EXT_UNUSED_PARAMETER(aFrame);
+    RED4EXT_UNUSED_PARAMETER(a4);
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetDynamicFrameGenerationState] Called!");
+    }
+
+    if (!g_GetFrameGenerationMode || !hDll)
+    {
+        DWORD error = GetLastError();
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_GetDynamicFrameGenerationState] Failed to get GetFrameGenerationMode function address. Error code: %lu", error);
+        if (aOut) *aOut = false;
+        return;
+    }
+
+    DLSS_Enabler_FrameGeneration_Mode currentMode;
+    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
+
+    if (result == DLSS_Enabler_Result_Success)
+    {
+        if (g_deBridgeDebug)
+        {
+            const char* modeString;
+            switch (currentMode)
+            {
+            case DLSS_Enabler_FrameGeneration_DFG_Enabled:
+                modeString = "Enabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_DFG_Disabled:
+                modeString = "Disabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_Enabled:
+                modeString = "Disabled";
+                break;
+            case DLSS_Enabler_FrameGeneration_Disabled:
+                modeString = "Disabled";
+                break;
+            default:
+                modeString = "Unknown";
+            }
+
+            sdk->logger->InfoF(handle, "[DLSSEnabler_GetDynamicFrameGenerationState] Current Dynamic Frame Generation State: %s", modeString);
+        }
+
+        if (aOut) *aOut = (currentMode == DLSS_Enabler_FrameGeneration_DFG_Enabled);
+    }
+    else
+    {
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_GetDynamicFrameGenerationState] Failed to get Dynamic Frame Generation State. Result: %d", result);
+        if (aOut) *aOut = false;
+    }
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetDynamicFrameGenerationState] Completed");
+    }
+}
+
+void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
+{
+    RED4EXT_UNUSED_PARAMETER(aContext);
+    RED4EXT_UNUSED_PARAMETER(a4);
+
+    int32_t newMode;
+    RED4ext::GetParameter(aFrame, &newMode);
+    aFrame->code++; // skip ParamEnd
+
+    if (newMode < 0 || newMode > 3) {
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_SetFrameGenerationMode] Invalid mode value: %d", newMode);
+        if (aOut) *aOut = false;
+        return;
+    }
+
+    DLSS_Enabler_FrameGeneration_Mode modeValue = static_cast<DLSS_Enabler_FrameGeneration_Mode>(newMode);
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationMode] Called with mode = %d", newMode);
+    }
+
+    if (!g_SetFrameGenerationMode || !hDll)
+    {
+        DWORD error = GetLastError();
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_SetFrameGenerationMode] Failed to get SetFrameGenerationMode function address. Error code: %lu", error);
+        if (aOut) *aOut = false;
+        return;
+    }
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationMode] SetFrameGenerationMode function address obtained successfully");
+    }
+
+    DLSS_Enabler_Result result = g_SetFrameGenerationMode(modeValue);
+
+    if (result == DLSS_Enabler_Result_Success)
+    {
+        if (g_deBridgeDebug)
+        {
+            sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationMode] Frame Generation mode set successfully");
+        }
+        if (aOut) *aOut = true;
+    }
+    else
+    {
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_SetFrameGenerationMode] Failed to set Frame Generation mode. Result: %d", result);
+        if (aOut) *aOut = false;
+    }
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationMode] Completed");
+    }
+}
+
+void DLSSEnabler_SetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(a4);
 
     bool shouldEnable;
     RED4ext::GetParameter(aFrame, &shouldEnable);
+    aFrame->code++; // skip ParamEnd
 
     if (g_deBridgeDebug)
     {
@@ -177,17 +359,16 @@ void DLSSEnabler_SetFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CSt
     {
         sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGeneration] Completed");
     }
-
-    aFrame->code++; // skip ParamEnd
 }
 
-void DLSSEnabler_SetDynamicFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
+void DLSSEnabler_SetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(a4);
 
     bool shouldEnable;
     RED4ext::GetParameter(aFrame, &shouldEnable);
+    aFrame->code++; // skip ParamEnd
 
     if (g_deBridgeDebug)
     {
@@ -228,11 +409,9 @@ void DLSSEnabler_SetDynamicFrameGeneration(RED4ext::IScriptable* aContext, RED4e
     {
         sdk->logger->InfoF(handle, "[DLSSEnabler_SetDynamicFrameGeneration] Completed");
     }
-
-    aFrame->code++; // skip ParamEnd
 }
 
-void DLSSEnabler_ToggleFrameGeneration(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
+void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(aFrame);
@@ -325,6 +504,14 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
 {
     auto rtti = RED4ext::CRTTISystem::Get();
 
+    auto getModeFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_GetFrameGenerationMode", "DLSSEnabler_GetFrameGenerationMode", &DLSSEnabler_GetFrameGenerationMode);
+    getModeFunc->SetReturnType("Int32");
+    rtti->RegisterFunction(getModeFunc);
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Registered!");
+    }
+
     auto getStateFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_GetFrameGenerationState", "DLSSEnabler_GetFrameGenerationState", &DLSSEnabler_GetFrameGenerationState);
     getStateFunc->SetReturnType("Bool");
     rtti->RegisterFunction(getStateFunc);
@@ -333,30 +520,46 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
         sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationState] Registered!");
     }
 
-    auto setFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_SetFrameGeneration", "DLSSEnabler_SetFrameGeneration", &DLSSEnabler_SetFrameGeneration);
+    auto getDFGStateFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_GetDynamicFrameGenerationState", "DLSSEnabler_GetDynamicFrameGenerationState", &DLSSEnabler_GetDynamicFrameGenerationState);
+    getDFGStateFunc->SetReturnType("Bool");
+    rtti->RegisterFunction(getDFGStateFunc);
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetDynamicFrameGenerationState] Registered!");
+    }
+
+    auto setModeFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_SetFrameGenerationMode", "DLSSEnabler_SetFrameGenerationMode", &DLSSEnabler_SetFrameGenerationMode);
+    setModeFunc->AddParam("Int32", "newMode");
+    setModeFunc->SetReturnType("Bool");
+    rtti->RegisterFunction(setModeFunc);
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationMode] Registered!");
+    }
+
+    auto setFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_SetFrameGenerationState", "DLSSEnabler_SetFrameGenerationState", &DLSSEnabler_SetFrameGenerationState);
     setFunc->AddParam("Bool", "shouldEnable");
     setFunc->SetReturnType("Bool");
     rtti->RegisterFunction(setFunc);
     if (g_deBridgeDebug)
     {
-        sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGeneration] Registered!");
+        sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationState] Registered!");
     }
 
-    auto setDFGFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_SetDynamicFrameGeneration", "DLSSEnabler_SetDynamicFrameGeneration", &DLSSEnabler_SetDynamicFrameGeneration);
+    auto setDFGFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_SetDynamicFrameGenerationState", "DLSSEnabler_SetDynamicFrameGenerationState", &DLSSEnabler_SetDynamicFrameGenerationState);
     setDFGFunc->AddParam("Bool", "shouldEnable");
     setDFGFunc->SetReturnType("Bool");
     rtti->RegisterFunction(setDFGFunc);
     if (g_deBridgeDebug)
     {
-        sdk->logger->InfoF(handle, "[DLSSEnabler_SetDynamicFrameGeneration] Registered!");
+        sdk->logger->InfoF(handle, "[DLSSEnabler_SetDynamicFrameGenerationState Registered!");
     }
 
-    auto toggleFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_ToggleFrameGeneration", "DLSSEnabler_ToggleFrameGeneration", &DLSSEnabler_ToggleFrameGeneration);
+    auto toggleFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_ToggleFrameGenerationState", "DLSSEnabler_ToggleFrameGenerationState", &DLSSEnabler_ToggleFrameGenerationState);
     toggleFunc->SetReturnType("Bool");
     rtti->RegisterFunction(toggleFunc);
     if (g_deBridgeDebug)
     {
-        sdk->logger->InfoF(handle, "[DLSSEnabler_ToggleFrameGeneration] Registered!");
+        sdk->logger->InfoF(handle, "[DLSSEnabler_ToggleFrameGenerationState] Registered!");
     }
 }
 
@@ -414,7 +617,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 3, 2, 1);
+    aInfo->version = RED4EXT_SEMVER(0, 3, 3, 0);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }
