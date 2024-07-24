@@ -4,7 +4,7 @@ A RED4ext plugin for Cyberpunk 2077 to control Frame Generation state via DLSS E
 
 ## Features
 Adds global methods that can be called from other mods/CET's console:
-- `DLSSEnabler_GetFrameGenerationMode()`: get Frame Generation state (0,1,3)
+- `DLSSEnabler_GetFrameGenerationMode()`: get Frame Generation mode (0,1,3)
 - `DLSSEnabler_SetFrameGenerationMode(int32 newMode)`: set Frame Generation to a specific mode (0,1,2,3)
 - `DLSSEnabler_GetFrameGenerationState()`: get Frame Generation state (on/off)
 - `DLSSEnabler_SetFrameGenerationState(bool shouldEnable)`: set Frame Generation to a specific state (on/off)
