@@ -159,6 +159,7 @@
     <None Include="docs\methods.md" />
     <None Include="LICENSE.md" />
     <None Include="README.md" />
+    <None Include="tools\cet\bin\x64\plugins\cyber_engine_tweaks\mods\dlss-enabler-bridge-2077-cet-tool\init.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

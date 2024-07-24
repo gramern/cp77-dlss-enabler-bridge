@@ -16,6 +16,12 @@
     <Filter Include="docs">
       <UniqueIdentifier>{8e9cb28e-05a9-4250-b033-5b891804dd8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{ae625722-2e44-48ad-af7d-9b8af6a118a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools\cet">
+      <UniqueIdentifier>{df7bf170-1d66-4c87-80d5-97323658a40c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE.md" />
@@ -23,6 +29,9 @@
     <None Include=".gitignore" />
     <None Include="docs\methods.md">
       <Filter>docs</Filter>
+    </None>
+    <None Include="tools\cet\bin\x64\plugins\cyber_engine_tweaks\mods\dlss-enabler-bridge-2077-cet-tool\init.lua">
+      <Filter>tools\cet</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -119,7 +119,8 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
                 modeString = "Unknown";
             }
 
-            sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Current Frame Generation Mode: %s", modeString);
+            sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Current Frame Generation Mode: %d", currentMode);
+            sdk->logger->InfoF(handle, "[DLSSEnabler_GetFrameGenerationMode] Current Frame Generation Status: %s", modeString);
         }
 
         if (aOut) *aOut = currentMode;
@@ -617,7 +618,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 3, 3, 0);
+    aInfo->version = RED4EXT_SEMVER(0, 3, 3, 1);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }
