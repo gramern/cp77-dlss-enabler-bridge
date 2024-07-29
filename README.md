@@ -20,7 +20,7 @@ See [methods.md](docs/methods.md) for details.
 + [RED4ext](https://github.com/WopsS/RED4ext) 1.25.0+
 
 ## Installation
-Place the `dlss-enabler-bridge-2077.dll` file in the `..\your Cybrepunk 2077 folder\red4ext\plugins\DLSSEnablerBridge2077` folder or unzip the archive to the game folder.
+Place the `dlss-enabler-bridge-2077.dll` file in the `..\your Cyberpunk 2077 folder\red4ext\plugins\DLSSEnablerBridge2077` folder or unzip the archive to the game folder.
 
 ## Building
 1. Clone the repository: (`git clone https://github.com/gramern/cp77-dlss-enabler-bridge.git`).
