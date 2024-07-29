@@ -23,7 +23,11 @@ See [methods.md](docs/methods.md) for details.
 Place the `dlss-enabler-bridge-2077.dll` file in the `..\your Cybrepunk 2077 folder\red4ext\plugins\DLSSEnablerBridge2077` folder or unzip the archive to the game folder.
 
 ## Building
-Place the repo next to your local [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) repository location and add the project to SDK's `*.sln` file. Make sure to check "RED4ext.SDK" in the project's dependencies.
+1. Clone the repository: (`git clone https://github.com/gramern/cp77-dlss-enabler-bridge.git`).
+2. Navigate to the project directory (`cd cp77-dlss-enabler-bridge`)
+2. Clone dependencies  (`git submodule update --init --recursive`).
+3. Build [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) projects.
+4. Build this project.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.

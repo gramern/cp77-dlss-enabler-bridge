@@ -9,7 +9,8 @@
 *.aps
 
 # Dependencies
-dependencies/
+dependencies/*
+!dependencies/.gitkeep
 
 # Build results
 [Dd]ebug/
