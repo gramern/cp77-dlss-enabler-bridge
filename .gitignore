@@ -8,6 +8,9 @@
 *.VC.opendb
 *.aps
 
+# Dependencies
+dependencies/
+
 # Build results
 [Dd]ebug/
 [Rr]elease/

@@ -533,6 +533,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
     setModeFunc->AddParam("Int32", "newMode");
     setModeFunc->SetReturnType("Bool");
     rtti->RegisterFunction(setModeFunc);
+    if (g_deBridgeDebug)
     {
         sdk->logger->InfoF(handle, "[DLSSEnabler_SetFrameGenerationMode] Registered!");
     }
@@ -618,7 +619,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 3, 3, 1);
+    aInfo->version = RED4EXT_SEMVER(0, 3, 3, 2);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }

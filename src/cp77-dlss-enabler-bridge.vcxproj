@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -27,19 +19,6 @@
     <ProjectName>cp77-dlss-enabler-bridge</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -58,12 +37,6 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -72,10 +45,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\RED4ext.SDK\build\$(Configuration)</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\dependencies\RED4ext.SDK\build\$(Configuration)</LibraryPath>
     <TargetName>dlss-enabler-bridge-2077</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\dependencies\RED4ext.SDK\build\$(Configuration)</LibraryPath>
     <TargetName>dlss-enabler-bridge-2077</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,14 +86,14 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>..\RED4ext.SDK\include;..\RED4ext.SDK\vendor;..\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\RED4ext.SDK\include;..\dependencies\RED4ext.SDK\vendor;..\dependencies\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);RED4EXT_STATIC_LIB</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);RED4ext.SDK.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\RED4ext.SDK\build\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\dependencies\RED4ext.SDK\build\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>..\RED4ext.SDK\include;..\RED4ext.SDK\vendor;..\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\RED4ext.SDK\include;..\dependencies\RED4ext.SDK\vendor;..\dependencies\RED4ext.SDK\vendor\RED4ext.SDK\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);RED4EXT_STATIC_LIB</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -139,27 +113,30 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);RED4ext.SDK.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\RED4ext.SDK\build\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\dependencies\RED4ext.SDK\build\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="..\include\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resources\VersionInfo.rc" />
+    <ResourceCompile Include="..\resources\VersionInfo.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".gitignore" />
-    <None Include="docs\methods.md" />
-    <None Include="LICENSE.md" />
-    <None Include="README.md" />
-    <None Include="tools\cet\bin\x64\plugins\cyber_engine_tweaks\mods\dlss-enabler-bridge-2077-cet-tool\init.lua" />
+    <None Include="..\.gitignore" />
+    <None Include="..\docs\methods.md" />
+    <None Include="..\LICENSE.md" />
+    <None Include="..\README.md" />
+    <None Include="..\tools\cet\bin\x64\plugins\cyber_engine_tweaks\mods\dlss-enabler-bridge-2077-cet-tool\init.lua" />
+  </ItemGroup>
+  <ItemGroup>
+	<Library Include="..\dependencies\RED4ext.SDK\build\$(Configuration)\RED4ext.SDK.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
