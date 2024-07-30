@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <string>
 #include <RED4ext/RED4ext.hpp>
 
 const RED4ext::Sdk* sdk;
@@ -71,6 +72,71 @@ void DLSSEnabler_OnUninitialize()
         g_SetFrameGenerationMode = nullptr;
         FreeLibrary(hDll);
         hDll = nullptr;
+    }
+}
+
+/////////////////////
+// Getters
+/////////////////////
+
+void DLSSEnabler_GetVersionAsString(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t a4)
+{
+    RED4EXT_UNUSED_PARAMETER(aContext);
+    RED4EXT_UNUSED_PARAMETER(aFrame);
+    RED4EXT_UNUSED_PARAMETER(a4);
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetVersionAsString] Called!");
+    }
+
+    DWORD verSize = GetFileVersionInfoSizeW(L"dlss-enabler.dll", NULL);
+    if (verSize != 0)
+    {
+        std::string versionStr = "Unknown";
+        std::vector<char> verData(verSize);
+        if (GetFileVersionInfoW(L"dlss-enabler.dll", 0, verSize, verData.data()))
+        {
+            UINT size = 0;
+            VS_FIXEDFILEINFO* verInfo = nullptr;
+            if (VerQueryValueW(verData.data(), L"\\", (VOID FAR * FAR*) & verInfo, &size))
+            {
+                if (size >= sizeof(VS_FIXEDFILEINFO) && verInfo->dwSignature == 0xfeef04bd)
+                {
+                    char szVersion[32];
+                    sprintf_s(szVersion, "%d.%d.%d.%d",
+                        HIWORD(verInfo->dwFileVersionMS),
+                        LOWORD(verInfo->dwFileVersionMS),
+                        HIWORD(verInfo->dwFileVersionLS),
+                        LOWORD(verInfo->dwFileVersionLS));
+                    versionStr = szVersion;
+                }
+            }
+        }
+
+        if (aOut)
+        {
+            *aOut = RED4ext::CString(versionStr.c_str());
+        }
+
+        if (g_deBridgeDebug)
+        {
+            sdk->logger->InfoF(handle, "[DLSSEnabler_GetVersionAsString] DLL version: %s", versionStr.c_str());
+        }
+    }
+    else
+    {
+        DWORD error = GetLastError();
+        sdk->logger->ErrorF(handle, "[DLSSEnabler_GetVersionAsString] Failed to get DLL version info. Error code: %lu", error);
+        if (aOut)
+        {
+            *aOut = RED4ext::CString("Unknown");
+        }
+    }
+
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetVersionAsString] Completed");
     }
 }
 
@@ -255,6 +321,10 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
     }
 }
 
+/////////////////////
+// Setters
+/////////////////////
+
 void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
@@ -412,6 +482,10 @@ void DLSSEnabler_SetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
     }
 }
 
+/////////////////////
+// Togglers
+/////////////////////
+
 void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext::CStackFrame* aFrame, bool* aOut, int64_t a4)
 {
     RED4EXT_UNUSED_PARAMETER(aContext);
@@ -504,6 +578,14 @@ RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes()
 RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
 {
     auto rtti = RED4ext::CRTTISystem::Get();
+
+    auto getDLLVersionStringFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_GetVersionAsString", "DLSSEnabler_GetVersionAsString", &DLSSEnabler_GetVersionAsString);
+    getDLLVersionStringFunc->SetReturnType("String");
+    rtti->RegisterFunction(getDLLVersionStringFunc);
+    if (g_deBridgeDebug)
+    {
+        sdk->logger->InfoF(handle, "[DLSSEnabler_GetVersionAsString] Registered!");
+    }
 
     auto getModeFunc = RED4ext::CGlobalFunction::Create("DLSSEnabler_GetFrameGenerationMode", "DLSSEnabler_GetFrameGenerationMode", &DLSSEnabler_GetFrameGenerationMode);
     getModeFunc->SetReturnType("Int32");
@@ -619,7 +701,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 3, 3, 2);
+    aInfo->version = RED4EXT_SEMVER(0, 3, 4);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }

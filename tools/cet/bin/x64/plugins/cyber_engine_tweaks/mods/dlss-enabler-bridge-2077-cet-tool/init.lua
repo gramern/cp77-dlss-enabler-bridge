@@ -1,6 +1,6 @@
 DLSSEnablerBridge2077CETTool = {
     __NAME = 'DLSS Enabler Bridge 2077 CET Tool',
-    __VERSION = { 0, 1, 1 },
+    __VERSION = { 0, 1, 2 },
     __LICENSE = [[
     MIT License
 
@@ -46,6 +46,16 @@ end
 
 registerForEvent('onInit', function() 
     print('[DLSSEnabler Bridge 2077 CET Tool] Initalized!') 
+end)
+
+registerInput('GetDLSSEnablerVersionString', 'Check DLSS Enabler DLL version as a string', function(keypress)
+    if not keypress then
+        return
+    end
+
+    local version = DLSSEnabler_GetVersionAsString()
+    
+    PrintInfo('DLSS Enabler DLL version:', version)
 end)
 
 registerInput('setFrameGenMode0', 'Set Frame Generation Mode 0', function(keypress)
