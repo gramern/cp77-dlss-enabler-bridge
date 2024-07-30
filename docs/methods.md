@@ -269,4 +269,5 @@ Results codes are the same for all methods and follow DLSS Enabler's API and `DL
 } DLSS_Enabler_Result;
 ```
 
-For comprehensive logging, use launch parameter `--de-bridge-debug` for the game (requires version 0.3.2.0+ of the plugin.).
+For debug logging, use launch parameter `--de-bridge-debug` for the game (requires version 0.3.2.0+ of the plugin.).
+For extended debug logging, use `--de-bridge-debug-ext` for the game (requires version 0.3.4.0+ of the plugin.).

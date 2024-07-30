@@ -11,8 +11,11 @@ Adds global methods that can be called from other mods/CET's console:
 - `DLSSEnabler_ToggleFrameGenerationState()`: toggle Frame Generation (on/off)
 - `DLSSEnabler_GetDynamicFrameGenerationState()`: get Dynamic Frame Generation state (on/off)
 - `DLSSEnabler_SetDynamicFrameGenerationState(bool shouldEnable)`: set Dynamic Frame Generation to a specific state (on/off)
+- `DLSSEnabler_GetVersionAsString()`: get `dlss-enabler.dll` version as a string
 
 See [methods.md](docs/methods.md) for details.
+
+You can use launch parameters for the game: `--de-bridge-debug` for the plugin's debug logging or `--de-bridge-debug-ext` for extended debug logging.
 
 ## Requirements
 + Cyberpunk 2.12+
