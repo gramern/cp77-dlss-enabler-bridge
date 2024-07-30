@@ -287,7 +287,7 @@ Results codes are the same for all methods and follow DLSS Enabler's API and `DL
 ﻿typedef enum DLSS_Enabler_Result
 {
     DLSS_Enabler_Result_Success = 1, // get/set operation succeeded
-    DLSS_Enabler_Result_Fail_Unsupported = 0, // user did not enable Frame Generation feature in game settings first
+    DLSS_Enabler_Result_Fail_Unsupported = 0, // user did not enable Frame Generation feature in game settings first OR the game disabled it temporarily (i.e. main and pause menu)
     DLSS_Enabler_Result_Fail_Bad_Argument = -1,
 } DLSS_Enabler_Result;
 ```
