@@ -40,12 +40,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\resource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\resources\resource.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -54,5 +48,10 @@
     <Library Include="..\dependencies\RED4ext.SDK\build\$(Configuration)\RED4ext.SDK.lib">
       <Filter>include\external-libraries</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\resources\resource.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,6 +4,29 @@ All methods are global and can be called at any moment of the game after the plu
 
 **NOTE:** _All methods retrieve or set Frame Generation Mode/State as it is in the current running instance of DLSS Enabler. The game's Frame Generation State remains the same as set in the game's settings._
 
+# DLSS Enabler DLL
+
+## `DLSSEnabler_GetVersionAsString()`
+
+### Description:
+Retrieves the version of the loaded `dlss-enabler.dll` file.
+
+### Required DLSS Enabler Version:
+All
+
+### Parameters:
+None
+
+### Returns:
+`string` - The version of DLSS Enabler's DLL (e.g., "2.90.0.0"). If the file is found but a version cannot be obtained, returns "Unknown".
+
+### Exemplary Usage (CET-lua):
+```
+local version = DLSSEnabler_GetVersionAsString()
+
+print("DLSS Enabler version: " .. version)
+```
+
 # Frame Generation Mode
 
 Modes are the same for all methods and follow DLSS Enabler's API and `DLSS_Enabler_FrameGeneration_Mode` below:
