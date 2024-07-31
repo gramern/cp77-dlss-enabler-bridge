@@ -21,7 +21,7 @@ You can use launch parameters for the game: `--de-bridge-debug` for the plugin's
 
 ## Requirements
 + Cyberpunk 2.12+
-+ [DLSS Enabler](https://github.com/artur-graniszewski/DLSS-Enabler) 2.90.800.0+
++ [DLSS Enabler](https://github.com/artur-graniszewski/DLSS-Enabler) 3.01.000.0+
 + [RED4ext](https://github.com/WopsS/RED4ext) 1.25.0+
 
 ## Installation
