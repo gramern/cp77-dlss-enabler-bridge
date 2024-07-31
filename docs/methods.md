@@ -4,6 +4,8 @@ All methods are global and can be called at any moment of the game after the plu
 
 **NOTE:** _All methods retrieve or set Frame Generation Mode/State as it is in the current running instance of DLSS Enabler. The game's Frame Generation State remains the same as set in the game's settings._
 
+**NOTE:** _All methods follow and pass DLSS Enabler's API logic without modifying it._
+
 # DLSS Enabler DLL
 
 ## `DLSSEnabler_GetVersionAsString()`

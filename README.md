@@ -2,6 +2,8 @@
 
 A RED4ext plugin for Cyberpunk 2077 to control Frame Generation state via DLSS Enabler's API.
 
+**NOTE:** _All methods follow and pass DLSS Enabler's API logic without modifying it._
+
 ## Features
 Adds global methods that can be called from other mods/CET's console:
 - `DLSSEnabler_GetVersionAsString()`: get `dlss-enabler.dll` version as a string
