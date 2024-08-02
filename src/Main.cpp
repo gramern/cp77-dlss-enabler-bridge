@@ -5,15 +5,15 @@
 
 const RED4ext::Sdk* sdk;
 RED4ext::PluginHandle pluginHandle;
-RED4ext::WeakHandle<RED4ext::IScriptable> weakHandle;
 
 static bool g_deBridgeDebug = false;
 static bool g_deBridgeDebugExt = false;
 const wchar_t* DLSS_ENABLER_DLL_NAME = L"dlss-enabler.dll";
 
 ////////////////////////
-// Logging Varaibles
+// Logging Variables
 ////////////////////////
+
 std::string g_lastLoggedMessage;
 bool g_isLoggingDisabled = false;
 bool g_isLastMessageRepeated = false;
@@ -165,7 +165,7 @@ bool OnInitialize()
         return false;
     }
 
-    LOG_DEBUG("Plugin has loaded succesfully");
+    LOG_DEBUG("Plugin has loaded successfully");
 
     return true;
 }
@@ -206,6 +206,7 @@ bool IsGameReady()
     auto rtti = RED4ext::CRTTISystem::Get();
     auto inkMenuScenCls = rtti->GetClass("inkMenuScenario");
 
+    RED4ext::WeakHandle<RED4ext::IScriptable> weakHandle;
     RED4ext::ExecuteFunction(gameInstance, inkMenuScenCls->GetFunction("GetSystemRequestsHandler"), &weakHandle);
 
     auto instance = weakHandle.Lock();
