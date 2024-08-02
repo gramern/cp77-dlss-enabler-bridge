@@ -1,36 +1,74 @@
 #include <windows.h>
+#include <string>
 #include <string_view>
 #include <RED4ext/RED4ext.hpp>
 
 const RED4ext::Sdk* sdk;
-RED4ext::PluginHandle handle;
+RED4ext::PluginHandle pluginHandle;
+RED4ext::WeakHandle<RED4ext::IScriptable> weakHandle;
 
 static bool g_deBridgeDebug = false;
 static bool g_deBridgeDebugExt = false;
 const wchar_t* DLSS_ENABLER_DLL_NAME = L"dlss-enabler.dll";
 
+std::string g_lastLoggedMessage;
+bool g_isLoggingDisabled = false;
+bool g_isLastMessageRepeated = false;
+
 #define FUNCTION_NAME __FUNCTION__
 
 #define LOG_DEBUG(format, ...) \
-    if (g_deBridgeDebug || g_deBridgeDebugExt) \
-    { \
-        sdk->logger->InfoF(handle, "[%s] " format, FUNCTION_NAME, ##__VA_ARGS__); \
-    }
+    do { \
+        if (!g_isLoggingDisabled && (g_deBridgeDebug || g_deBridgeDebugExt)) { \
+            char buffer[256]; \
+            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
+            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
+            if (ShouldLog(message)) { \
+                sdk->logger->InfoF(pluginHandle, "%s", message.c_str()); \
+            } \
+        } \
+    } while(0)
 
 #define LOG_DEBUG_EXT(format, ...) \
-    if (g_deBridgeDebugExt) \
-    { \
-        sdk->logger->InfoF(handle, "[%s] " format, FUNCTION_NAME, ##__VA_ARGS__); \
-    }
+    do { \
+        if (!g_isLoggingDisabled && g_deBridgeDebugExt) { \
+            char buffer[256]; \
+            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
+            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
+            if (ShouldLog(message)) { \
+                sdk->logger->InfoF(pluginHandle, "%s", message.c_str()); \
+            } \
+        } \
+    } while(0)
 
 #define LOG_ERROR(format, ...) \
-    sdk->logger->ErrorF(handle, "[%s] " format, FUNCTION_NAME, ##__VA_ARGS__)
+    do { \
+        if (!g_isLoggingDisabled) { \
+            char buffer[256]; \
+            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
+            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
+            if (ShouldLog(message)) { \
+                sdk->logger->ErrorF(pluginHandle, "%s", message.c_str()); \
+            } \
+        } \
+    } while(0)
 
 #define LOG_WARN(format, ...) \
-    if (g_deBridgeDebug || g_deBridgeDebugExt) \
-    { \
-        sdk->logger->WarnF(handle, "[%s] " format, FUNCTION_NAME, ##__VA_ARGS__); \
-    }
+    do { \
+        if (!g_isLoggingDisabled && (g_deBridgeDebug || g_deBridgeDebugExt)) { \
+            char buffer[256]; \
+            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
+            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
+            if (ShouldLog(message)) { \
+                sdk->logger->WarnF(pluginHandle, "%s", message.c_str()); \
+            } \
+        } \
+    } while(0)
+
+
+////////////////////////
+// DLSSEnabler's API 
+////////////////////////
 
 typedef enum DLSS_Enabler_FrameGeneration_Mode
 {
@@ -51,15 +89,43 @@ typedef DLSS_Enabler_Result(*GetFrameGenerationModeFunc)(DLSS_Enabler_FrameGener
 typedef DLSS_Enabler_Result(*SetFrameGenerationModeFunc)(DLSS_Enabler_FrameGeneration_Mode mode);
 
 static HMODULE hDll;
-static GetFrameGenerationModeFunc g_GetFrameGenerationMode = nullptr;
-static SetFrameGenerationModeFunc g_SetFrameGenerationMode = nullptr;
+static GetFrameGenerationModeFunc g_GetFrameGenerationModeFunc = nullptr;
+static SetFrameGenerationModeFunc g_SetFrameGenerationModeFunc = nullptr;
+
+////////////////////////
+// Restrict Logging: in case the modded Frame Generation goes *^(!$^% or methods are called excessively when FG is turned off in the game settings
+////////////////////////
+
+bool ShouldLog(const std::string& message) 
+{
+    if (g_isLoggingDisabled) {
+        return false;
+    }
+
+    if (message == g_lastLoggedMessage) {
+        if (!g_isLastMessageRepeated) {
+            g_isLastMessageRepeated = true;
+            return true;
+        }
+        return false;
+    }
+    else {
+        g_lastLoggedMessage = message;
+        g_isLastMessageRepeated = false;
+        return true;
+    }
+}
 
 /////////////////////
 // Initialize / Uninitialize
 /////////////////////
 
-bool DLSSEnabler_OnInitialize()
+bool OnInitialize()
 {
+    g_lastLoggedMessage = "";
+    g_isLoggingDisabled = false;
+    g_isLastMessageRepeated = false;
+
     hDll = LoadLibraryW(DLSS_ENABLER_DLL_NAME);
     if (!hDll)
     {
@@ -70,10 +136,10 @@ bool DLSSEnabler_OnInitialize()
 
     LOG_DEBUG("dlss-enabler.dll loaded successfully");
 
-    g_GetFrameGenerationMode = (GetFrameGenerationModeFunc)GetProcAddress(hDll, "GetFrameGenerationMode");
-    g_SetFrameGenerationMode = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
+    g_GetFrameGenerationModeFunc = (GetFrameGenerationModeFunc)GetProcAddress(hDll, "GetFrameGenerationMode");
+    g_SetFrameGenerationModeFunc = (SetFrameGenerationModeFunc)GetProcAddress(hDll, "SetFrameGenerationMode");
 
-    if (!g_GetFrameGenerationMode || !g_SetFrameGenerationMode)
+    if (!g_GetFrameGenerationModeFunc || !g_SetFrameGenerationModeFunc)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get function addresses. Error code: %lu", error);
@@ -87,17 +153,71 @@ bool DLSSEnabler_OnInitialize()
     return true;
 }
 
-void DLSSEnabler_OnUninitialize()
+void OnUninitialize()
 {
+    g_lastLoggedMessage = "";
+    g_isLoggingDisabled = false;
+    g_isLastMessageRepeated = false;
+
     if (hDll)
     {
-        g_GetFrameGenerationMode = nullptr;
-        g_SetFrameGenerationMode = nullptr;
+        g_GetFrameGenerationModeFunc = nullptr;
+        g_SetFrameGenerationModeFunc = nullptr;
         FreeLibrary(hDll);
         hDll = nullptr;
     }
     
     LOG_DEBUG("Plugin unloading...");
+}
+
+////////////////////////
+// Check The Game: is the game ready to use the API?
+////////////////////////
+
+bool IsGameReady()
+{
+    LOG_DEBUG_EXT("Called!");
+
+    auto gameInstance = RED4ext::CGameEngine::Get()->framework->gameInstance;
+
+    if (!gameInstance)
+    {
+        LOG_WARN("The game is paused, or in the main menu. Communication with DLSS Enabler is halted.");
+        return false;
+    }
+
+    auto rtti = RED4ext::CRTTISystem::Get();
+    auto inkMenuScenCls = rtti->GetClass("inkMenuScenario");
+
+    RED4ext::ExecuteFunction(gameInstance, inkMenuScenCls->GetFunction("GetSystemRequestsHandler"), &weakHandle);
+
+    auto instance = weakHandle.Lock();
+
+    if (!instance)
+    {
+        LOG_WARN("The game is paused, or in the main menu. Communication with DLSS Enabler is halted.");
+        return false;
+    }
+
+    auto inkSysReqHandCls = rtti->GetClass("inkISystemRequestsHandler");
+    bool isPreGame;
+    bool isGamePaused;
+
+    RED4ext::ExecuteFunction(instance, inkSysReqHandCls->GetFunction("IsPreGame"), &isPreGame);
+    RED4ext::ExecuteFunction(instance, inkSysReqHandCls->GetFunction("IsGamePaused"), &isGamePaused);
+
+    bool isReady = !isPreGame && !isGamePaused;
+    if (isReady)
+    {
+        LOG_DEBUG_EXT("The game should be ready for API communication, if running in the normal mode.");
+    }
+    else
+    {
+        LOG_WARN("The game is paused, or in the main menu. Communication with DLSS Enabler is halted.");
+    }
+
+    LOG_DEBUG_EXT("Completed");
+    return isReady;
 }
 
 /////////////////////
@@ -144,7 +264,6 @@ void DLSSEnabler_GetVersionAsString(RED4ext::IScriptable* aContext, RED4ext::CSt
         LOG_ERROR("Failed to get DLL version info. Error code: %lu", error);
     }
 
-    // Add null check before dereferencing aOut
     if (aOut)
     {
         *aOut = RED4ext::CString(std::string_view(versionStr));
@@ -165,7 +284,13 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
 
     LOG_DEBUG_EXT("Called!");
 
-    if (!g_GetFrameGenerationMode || !hDll)
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = DLSS_Enabler_Result_Fail_Unsupported;
+        return;
+    }
+
+    if (!g_GetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get GetFrameGenerationMode function address. Error code: %lu", error);
@@ -174,7 +299,7 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
     }
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
+    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -229,7 +354,13 @@ void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
 
     LOG_DEBUG_EXT("Called!");
 
-    if (!g_GetFrameGenerationMode || !hDll)
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = false;
+        return;
+    }
+
+    if (!g_GetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get GetFrameGenerationMode function address. Error code: %lu", error);
@@ -238,7 +369,7 @@ void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
     }
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
+    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -286,7 +417,13 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
 
     LOG_DEBUG_EXT("Called!");
 
-    if (!g_GetFrameGenerationMode || !hDll)
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = false;
+        return;
+    }
+
+    if (!g_GetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get GetFrameGenerationMode function address. Error code: %lu", error);
@@ -295,7 +432,7 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
     }
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
+    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -350,6 +487,12 @@ void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(a4);
 
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = false;
+        return;
+    }
+
     int32_t newMode;
     RED4ext::GetParameter(aFrame, &newMode);
     aFrame->code++; // skip ParamEnd
@@ -364,7 +507,7 @@ void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
     
     LOG_DEBUG_EXT("Called with mode = %d", newMode);
 
-    if (!g_SetFrameGenerationMode || !hDll)
+    if (!g_SetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get SetFrameGenerationMode function address. Error code: %lu", error);
@@ -374,7 +517,7 @@ void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
 
     LOG_DEBUG_EXT("SetFrameGenerationMode function address obtained successfully");
 
-    DLSS_Enabler_Result result = g_SetFrameGenerationMode(modeValue);
+    DLSS_Enabler_Result result = g_SetFrameGenerationModeFunc(modeValue);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -395,13 +538,19 @@ void DLSSEnabler_SetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(a4);
 
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = false;
+        return;
+    }
+
     bool shouldEnable;
     RED4ext::GetParameter(aFrame, &shouldEnable);
     aFrame->code++; // skip ParamEnd
 
     LOG_DEBUG_EXT("Called with shouldEnable = %s", shouldEnable ? "true" : "false");
 
-    if (!g_SetFrameGenerationMode || !hDll)
+    if (!g_SetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get SetFrameGenerationMode function address. Error code: %lu", error);
@@ -412,7 +561,7 @@ void DLSSEnabler_SetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
     LOG_DEBUG_EXT("SetFrameGenerationMode function address obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode newMode = shouldEnable ? DLSS_Enabler_FrameGeneration_Enabled : DLSS_Enabler_FrameGeneration_Disabled;
-    DLSS_Enabler_Result result = g_SetFrameGenerationMode(newMode);
+    DLSS_Enabler_Result result = g_SetFrameGenerationModeFunc(newMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -433,13 +582,19 @@ void DLSSEnabler_SetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
     RED4EXT_UNUSED_PARAMETER(aContext);
     RED4EXT_UNUSED_PARAMETER(a4);
 
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = false;
+        return;
+    }
+
     bool shouldEnable;
     RED4ext::GetParameter(aFrame, &shouldEnable);
     aFrame->code++; // skip ParamEnd
 
     LOG_DEBUG_EXT("Called with shouldEnable = %s", shouldEnable ? "true" : "false");
 
-    if (!g_SetFrameGenerationMode || !hDll)
+    if (!g_SetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get SetFrameGenerationMode function address. Error code: %lu", error);
@@ -450,7 +605,7 @@ void DLSSEnabler_SetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
     LOG_DEBUG_EXT("SetFrameGenerationMode function address obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode newMode = shouldEnable ? DLSS_Enabler_FrameGeneration_DFG_Enabled : DLSS_Enabler_FrameGeneration_DFG_Disabled;
-    DLSS_Enabler_Result result = g_SetFrameGenerationMode(newMode);
+    DLSS_Enabler_Result result = g_SetFrameGenerationModeFunc(newMode);
 
     if (result == DLSS_Enabler_Result_Success)
     {
@@ -478,7 +633,13 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
 
     LOG_DEBUG_EXT("Called!");
 
-    if (!g_GetFrameGenerationMode || !g_SetFrameGenerationMode || !hDll)
+    if (!IsGameReady())
+    {
+        if (aOut) *aOut = false;
+        return;
+    }
+
+    if (!g_GetFrameGenerationModeFunc || !g_SetFrameGenerationModeFunc || !hDll)
     {
         DWORD error = GetLastError();
         LOG_ERROR("Failed to get function addresses. Error code: %lu", error);
@@ -489,7 +650,7 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
     LOG_DEBUG_EXT("Function addresses obtained successfully");
 
     DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationMode(currentMode);
+    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
 
     if (result != DLSS_Enabler_Result_Success)
     {
@@ -502,7 +663,7 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
 
     if (currentMode == DLSS_Enabler_FrameGeneration_Disabled)
     {
-        result = g_SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Enabled);
+        result = g_SetFrameGenerationModeFunc(DLSS_Enabler_FrameGeneration_Enabled);
         if (result == DLSS_Enabler_Result_Success)
         {
             LOG_DEBUG("Frame Generation set to Enabled");
@@ -516,7 +677,7 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
     }
     else if (currentMode == DLSS_Enabler_FrameGeneration_Enabled)
     {
-        result = g_SetFrameGenerationMode(DLSS_Enabler_FrameGeneration_Disabled);
+        result = g_SetFrameGenerationModeFunc(DLSS_Enabler_FrameGeneration_Disabled);
         if (result == DLSS_Enabler_Result_Success)
         {
             LOG_DEBUG("Frame Generation set to Disabled");
@@ -600,7 +761,10 @@ RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
 RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::EMainReason aReason, const RED4ext::Sdk* aSdk)
 {
     sdk = aSdk;
-    handle = aHandle;
+    pluginHandle = aHandle;
+
+    g_deBridgeDebug = false;
+    g_deBridgeDebugExt = false;
 
     switch (aReason)
     {
@@ -633,15 +797,15 @@ RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::PluginHandle aHandle, RED4ext::
             g_deBridgeDebug ? "Enabled" : "Disabled",
             g_deBridgeDebugExt ? "Enabled" : "Disabled");
 
-        if (!DLSSEnabler_OnInitialize())
+        if (!OnInitialize())
         {
-            sdk->logger->Error(handle, "Failed to initialize. Plugin may not function correctly.");
+            sdk->logger->Error(pluginHandle, "Failed to initialize. Plugin may not function correctly.");
         }
         break;
     }
     case RED4ext::EMainReason::Unload:
     {
-        DLSSEnabler_OnUninitialize();
+        OnUninitialize();
         break;
     }
     }
@@ -653,7 +817,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 3, 4);
+    aInfo->version = RED4EXT_SEMVER(0, 3, 5);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }

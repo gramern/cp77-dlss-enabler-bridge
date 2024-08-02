@@ -4,8 +4,6 @@ All methods are global and can be called at any moment of the gameplay after the
 
 **NOTE:** _All methods retrieve or set Frame Generation Mode/State as it is in the current running instance of DLSS Enabler. The game's Frame Generation State remains the same as set in the game's settings._
 
-**NOTE:** _Since Cyberpunk 2077 disables Frame Generation in its main and pause menus and blocks DLSS Enabler's API from accessing it, setter methods will work as intended when the game is unpaused._
-
 **NOTE:** _All methods follow and pass DLSS Enabler's API logic without modifying it._
 
 # DLSS Enabler DLL
