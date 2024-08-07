@@ -87,23 +87,23 @@ const char* LOG_MSG_UNKNOWN = "Unknown";
 // DLSSEnabler's API 
 ////////////////////////
 
-typedef enum DLSS_Enabler_FrameGeneration_Mode
+typedef enum DLSS_ENABLER_FRAMEGENERATION_MODE
 {
-    DLSS_Enabler_FrameGeneration_Disabled = 0,
-    DLSS_Enabler_FrameGeneration_Enabled = 1,
-    DLSS_Enabler_FrameGeneration_DFG_Disabled = 2,
-    DLSS_Enabler_FrameGeneration_DFG_Enabled = 3,
-} DLSS_Enabler_FrameGeneration_Mode;
+    DLSS_ENABLER_FRAMEGENERATION_DISABLED = 0,
+    DLSS_ENABLER_FRAMEGENERATION_ENABLED = 1,
+    DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED = 2,
+    DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED = 3,
+} DLSS_ENABLER_FRAMEGENERATION_MODE;
 
-typedef enum DLSS_Enabler_Result
+typedef enum DLSS_ENABLER_RESULT
 {
-    DLSS_Enabler_Result_Success = 1,
-    DLSS_Enabler_Result_Fail_Unsupported = 0,
-    DLSS_Enabler_Result_Fail_Bad_Argument = -1,
-} DLSS_Enabler_Result;
+    DLSS_ENABLER_RESULT_SUCCESS = 1,
+    DLSS_ENABLER_RESULT_FAIL_UNSUPPORTED = 0,
+    DLSS_ENABLER_RESULT_FAIL_BAD_ARGUMENT = -1,
+} DLSS_ENABLER_RESULT;
 
-typedef DLSS_Enabler_Result(*GetFrameGenerationModeFunc)(DLSS_Enabler_FrameGeneration_Mode& mode);
-typedef DLSS_Enabler_Result(*SetFrameGenerationModeFunc)(DLSS_Enabler_FrameGeneration_Mode mode);
+typedef DLSS_ENABLER_RESULT(*GetFrameGenerationModeFunc)(DLSS_ENABLER_FRAMEGENERATION_MODE& mode);
+typedef DLSS_ENABLER_RESULT(*SetFrameGenerationModeFunc)(DLSS_ENABLER_FRAMEGENERATION_MODE mode);
 
 static HMODULE hDll;
 static GetFrameGenerationModeFunc g_GetFrameGenerationModeFunc = nullptr;
@@ -304,7 +304,7 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
 
     if (!IsGameReady())
     {
-        if (aOut) *aOut = DLSS_Enabler_Result_Fail_Unsupported;
+        if (aOut) *aOut = DLSS_ENABLER_RESULT_FAIL_UNSUPPORTED;
         return;
     }
 
@@ -312,30 +312,30 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
     {
         DWORD error = GetLastError();
         LOG_ERROR(LOG_MSG_FUNC_GET_ADDR_FAILED, error);
-        if (aOut) *aOut = DLSS_Enabler_Result_Fail_Unsupported;
+        if (aOut) *aOut = DLSS_ENABLER_RESULT_FAIL_UNSUPPORTED;
         return;
     }
 
-    DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE currentMode;
+    DLSS_ENABLER_RESULT result = g_GetFrameGenerationModeFunc(currentMode);
 
-    if (result == DLSS_Enabler_Result_Success)
+    if (result == DLSS_ENABLER_RESULT_SUCCESS)
     {
         if (g_deBridgeDebug)
         {
             const char* modeString;
             switch (currentMode)
             {
-            case DLSS_Enabler_FrameGeneration_Disabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DISABLED:
                 modeString = "FG Disabled; DFG Disabled";
                 break;
-            case DLSS_Enabler_FrameGeneration_Enabled:
+            case DLSS_ENABLER_FRAMEGENERATION_ENABLED:
                 modeString = "FG Enabled; DFG Disabled";
                 break;
-            case DLSS_Enabler_FrameGeneration_DFG_Disabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED:
                 modeString = "FG Unknown; DFG Disabled";
                 break;
-            case DLSS_Enabler_FrameGeneration_DFG_Enabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED:
                 modeString = "FG Unknown; DFG Enabled";
                 break;
             default:
@@ -386,20 +386,20 @@ void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
         return;
     }
 
-    DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE currentMode;
+    DLSS_ENABLER_RESULT result = g_GetFrameGenerationModeFunc(currentMode);
 
-    if (result == DLSS_Enabler_Result_Success)
+    if (result == DLSS_ENABLER_RESULT_SUCCESS)
     {
         if (g_deBridgeDebug)
         {
             const char* modeString;
             switch (currentMode)
             {
-            case DLSS_Enabler_FrameGeneration_Enabled:
+            case DLSS_ENABLER_FRAMEGENERATION_ENABLED:
                 modeString = LOG_MSG_ENABLED;
                 break;
-            case DLSS_Enabler_FrameGeneration_Disabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DISABLED:
                 modeString = LOG_MSG_DISABLED;
                 break;
             default:
@@ -411,7 +411,7 @@ void DLSSEnabler_GetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
 
         if (aOut)
         {
-            *aOut = (currentMode == DLSS_Enabler_FrameGeneration_Enabled);
+            *aOut = (currentMode == DLSS_ENABLER_FRAMEGENERATION_ENABLED);
         }
         else
         {
@@ -449,26 +449,26 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
         return;
     }
 
-    DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE currentMode;
+    DLSS_ENABLER_RESULT result = g_GetFrameGenerationModeFunc(currentMode);
 
-    if (result == DLSS_Enabler_Result_Success)
+    if (result == DLSS_ENABLER_RESULT_SUCCESS)
     {
         if (g_deBridgeDebug)
         {
             const char* modeString;
             switch (currentMode)
             {
-            case DLSS_Enabler_FrameGeneration_DFG_Enabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED:
                 modeString = LOG_MSG_ENABLED;
                 break;
-            case DLSS_Enabler_FrameGeneration_DFG_Disabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED:
                 modeString = LOG_MSG_DISABLED;
                 break;
-            case DLSS_Enabler_FrameGeneration_Enabled:
+            case DLSS_ENABLER_FRAMEGENERATION_ENABLED:
                 modeString = LOG_MSG_DISABLED;
                 break;
-            case DLSS_Enabler_FrameGeneration_Disabled:
+            case DLSS_ENABLER_FRAMEGENERATION_DISABLED:
                 modeString = LOG_MSG_DISABLED;
                 break;
             default:
@@ -480,7 +480,7 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
 
         if (aOut)
         {
-            *aOut = (currentMode == DLSS_Enabler_FrameGeneration_DFG_Enabled);
+            *aOut = (currentMode == DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED);
         }
         else
         {
@@ -521,7 +521,7 @@ void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
         return;
     }
 
-    DLSS_Enabler_FrameGeneration_Mode modeValue = static_cast<DLSS_Enabler_FrameGeneration_Mode>(newMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE modeValue = static_cast<DLSS_ENABLER_FRAMEGENERATION_MODE>(newMode);
     
     LOG_DEBUG_EXT("Called with mode = %d", newMode);
 
@@ -535,9 +535,9 @@ void DLSSEnabler_SetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
 
     LOG_DEBUG_EXT("SetFrameGenerationMode function address obtained successfully");
 
-    DLSS_Enabler_Result result = g_SetFrameGenerationModeFunc(modeValue);
+    DLSS_ENABLER_RESULT result = g_SetFrameGenerationModeFunc(modeValue);
 
-    if (result == DLSS_Enabler_Result_Success)
+    if (result == DLSS_ENABLER_RESULT_SUCCESS)
     {
         LOG_DEBUG("Frame Generation mode set successfully: %d", newMode);
         if (aOut) *aOut = true;
@@ -578,10 +578,10 @@ void DLSSEnabler_SetFrameGenerationState(RED4ext::IScriptable* aContext, RED4ext
 
     LOG_DEBUG_EXT("SetFrameGenerationMode function address obtained successfully");
 
-    DLSS_Enabler_FrameGeneration_Mode newMode = shouldEnable ? DLSS_Enabler_FrameGeneration_Enabled : DLSS_Enabler_FrameGeneration_Disabled;
-    DLSS_Enabler_Result result = g_SetFrameGenerationModeFunc(newMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE newMode = shouldEnable ? DLSS_ENABLER_FRAMEGENERATION_ENABLED : DLSS_ENABLER_FRAMEGENERATION_DISABLED;
+    DLSS_ENABLER_RESULT result = g_SetFrameGenerationModeFunc(newMode);
 
-    if (result == DLSS_Enabler_Result_Success)
+    if (result == DLSS_ENABLER_RESULT_SUCCESS)
     {
         LOG_DEBUG("Frame Generation set to %s", shouldEnable ? LOG_MSG_ENABLED : LOG_MSG_DISABLED);
         if (aOut) *aOut = true;
@@ -622,10 +622,10 @@ void DLSSEnabler_SetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
 
     LOG_DEBUG_EXT("SetFrameGenerationMode function address obtained successfully");
 
-    DLSS_Enabler_FrameGeneration_Mode newMode = shouldEnable ? DLSS_Enabler_FrameGeneration_DFG_Enabled : DLSS_Enabler_FrameGeneration_DFG_Disabled;
-    DLSS_Enabler_Result result = g_SetFrameGenerationModeFunc(newMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE newMode = shouldEnable ? DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED : DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED;
+    DLSS_ENABLER_RESULT result = g_SetFrameGenerationModeFunc(newMode);
 
-    if (result == DLSS_Enabler_Result_Success)
+    if (result == DLSS_ENABLER_RESULT_SUCCESS)
     {
         LOG_DEBUG("Dynamic Frame Generation set to %s", shouldEnable ? LOG_MSG_ENABLED : LOG_MSG_DISABLED);
         if (aOut) *aOut = true;
@@ -667,10 +667,10 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
 
     LOG_DEBUG_EXT("Function addresses obtained successfully");
 
-    DLSS_Enabler_FrameGeneration_Mode currentMode;
-    DLSS_Enabler_Result result = g_GetFrameGenerationModeFunc(currentMode);
+    DLSS_ENABLER_FRAMEGENERATION_MODE currentMode;
+    DLSS_ENABLER_RESULT result = g_GetFrameGenerationModeFunc(currentMode);
 
-    if (result != DLSS_Enabler_Result_Success)
+    if (result != DLSS_ENABLER_RESULT_SUCCESS)
     {
         LOG_ERROR("GetFrameGenerationMode failed with result: %d", result);
         if (aOut) *aOut = false;
@@ -679,10 +679,10 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
 
     LOG_DEBUG("Current Frame Generation Mode: %d", currentMode);
 
-    if (currentMode == DLSS_Enabler_FrameGeneration_Disabled)
+    if (currentMode == DLSS_ENABLER_FRAMEGENERATION_DISABLED)
     {
-        result = g_SetFrameGenerationModeFunc(DLSS_Enabler_FrameGeneration_Enabled);
-        if (result == DLSS_Enabler_Result_Success)
+        result = g_SetFrameGenerationModeFunc(DLSS_ENABLER_FRAMEGENERATION_ENABLED);
+        if (result == DLSS_ENABLER_RESULT_SUCCESS)
         {
             LOG_DEBUG("Frame Generation set to Enabled");
             if (aOut) *aOut = true;
@@ -693,10 +693,10 @@ void DLSSEnabler_ToggleFrameGenerationState(RED4ext::IScriptable* aContext, RED4
             if (aOut) *aOut = false;
         }
     }
-    else if (currentMode == DLSS_Enabler_FrameGeneration_Enabled)
+    else if (currentMode == DLSS_ENABLER_FRAMEGENERATION_ENABLED)
     {
-        result = g_SetFrameGenerationModeFunc(DLSS_Enabler_FrameGeneration_Disabled);
-        if (result == DLSS_Enabler_Result_Success)
+        result = g_SetFrameGenerationModeFunc(DLSS_ENABLER_FRAMEGENERATION_DISABLED);
+        if (result == DLSS_ENABLER_RESULT_SUCCESS)
         {
             LOG_DEBUG("Frame Generation set to Disabled");
             if (aOut) *aOut = true;

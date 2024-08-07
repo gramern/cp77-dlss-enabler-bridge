@@ -33,13 +33,13 @@ print("DLSS Enabler version: " .. version)
 
 Modes are the same for all methods and follow DLSS Enabler's API and `DLSS_Enabler_FrameGeneration_Mode` below:
 ```
-typedef enum DLSS_Enabler_FrameGeneration_Mode
+typedef enum DLSS_ENABLER_FRAMEGENERATION_MODE
 {
-    DLSS_Enabler_FrameGeneration_Disabled = 0,
-    DLSS_Enabler_FrameGeneration_Enabled = 1,
-    DLSS_Enabler_FrameGeneration_DFG_Disabled = 2,
-    DLSS_Enabler_FrameGeneration_DFG_Enabled = 3,
-} DLSS_Enabler_FrameGeneration_Mode;
+    DLSS_ENABLER_FRAMEGENERATION_DISABLED = 0,
+    DLSS_ENABLER_FRAMEGENERATION_ENABLED = 1,
+    DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED = 2,
+    DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED = 3,
+} DLSS_ENABLER_FRAMEGENERATION_MODE;
 ```
 
 ## `DLSSEnabler_GetFrameGenerationMode()`
@@ -286,12 +286,12 @@ The plugin saves logs to the standard localization: `..\your Cybrepunk 2077 fold
 
 Results codes are the same for all methods and follow DLSS Enabler's API and `DLSS_Enabler_Result` below:
 ```
-﻿typedef enum DLSS_Enabler_Result
+typedef enum DLSS_ENABLER_RESULT
 {
-    DLSS_Enabler_Result_Success = 1, // get/set operation succeeded
-    DLSS_Enabler_Result_Fail_Unsupported = 0, // user did not enable Frame Generation feature in game settings first OR the game disabled it temporarily (i.e. main and pause menu)
-    DLSS_Enabler_Result_Fail_Bad_Argument = -1,
-} DLSS_Enabler_Result;
+    DLSS_ENABLER_RESULT_SUCCESS = 1, // get/set operation succeeded
+    DLSS_ENABLER_RESULT_FAIL_UNSUPPORTED = 0, // user did not enable Frame Generation feature in game settings first OR the game disabled it temporarily (i.e. main and pause menu)
+    DLSS_ENABLER_RESULT_FAIL_BAD_ARGUMENT = -1,
+} DLSS_ENABLER_RESULT;
 ```
 
 For debug logging, use launch parameter `--de-bridge-debug` for the game (requires version 0.3.2.0+ of the plugin.).
