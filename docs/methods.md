@@ -57,10 +57,9 @@ None
 `int32` - The current Frame Generation mode:
 
 `0`: Frame Generation Disabled; Dynamic Frame Generation Disabled  
-`1`: Frame Generation Enabled; Dynamic Frame Generation Disabled  
-`3`: Frame Generation Unknown; Dynamic Frame Generation Enabled. 
-
-**NOTE:** _Always returns `3`, if Dynamic Frame Generation is enabled in the API **and** DLSS Enabler's/OptiScaler's `*.ini` or UI._
+`1`: Frame Generation Enabled; Dynamic Frame Generation Disabled
+`2`: Frame Generation Disabled; Dynamic Frame Generation Enabled
+`3`: Frame Generation Enabled; Dynamic Frame Generation Enabled
 
 Returns `-1` if the operation fails.
 

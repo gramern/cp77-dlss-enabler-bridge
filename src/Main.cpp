@@ -333,10 +333,10 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
                 modeString = "FG Enabled; DFG Disabled";
                 break;
             case DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED:
-                modeString = "FG Unknown; DFG Disabled";
+                modeString = "FG Disabled; DFG Enabled";
                 break;
             case DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED:
-                modeString = "FG Unknown; DFG Enabled";
+                modeString = "FG Enabled; DFG Enabled";
                 break;
             default:
                 modeString = LOG_MSG_UNKNOWN;
@@ -463,7 +463,7 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
                 modeString = LOG_MSG_ENABLED;
                 break;
             case DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED:
-                modeString = LOG_MSG_DISABLED;
+                modeString = LOG_MSG_ENABLED;
                 break;
             case DLSS_ENABLER_FRAMEGENERATION_ENABLED:
                 modeString = LOG_MSG_DISABLED;
@@ -480,7 +480,7 @@ void DLSSEnabler_GetDynamicFrameGenerationState(RED4ext::IScriptable* aContext, 
 
         if (aOut)
         {
-            *aOut = (currentMode == DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED);
+            *aOut = (currentMode == DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED || currentMode == DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED);
         }
         else
         {
@@ -835,7 +835,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 4, 0);
+    aInfo->version = RED4EXT_SEMVER(0, 4, 1);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }
