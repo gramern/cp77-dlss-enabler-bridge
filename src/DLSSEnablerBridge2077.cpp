@@ -1,74 +1,23 @@
+#include "DLSSEnablerBridge2077.h"
 #include <windows.h>
 #include <string>
 #include <string_view>
 #include <RED4ext/RED4ext.hpp>
 
+// Global variables
 const RED4ext::Sdk* sdk;
 RED4ext::PluginHandle pluginHandle;
-
-static bool g_deBridgeDebug = false;
-static bool g_deBridgeDebugExt = false;
-const wchar_t* DLSS_ENABLER_DLL_NAME = L"dlss-enabler.dll";
-
-////////////////////////
-// Logging Variables
-////////////////////////
-
+HMODULE hDll;
+GetFrameGenerationModeFunc g_GetFrameGenerationModeFunc = nullptr;
+SetFrameGenerationModeFunc g_SetFrameGenerationModeFunc = nullptr;
 std::string g_lastLoggedMessage;
 bool g_isLoggingDisabled = false;
 bool g_isLastMessageRepeated = false;
+bool g_deBridgeDebug = false;
+bool g_deBridgeDebugExt = false;
 
-#define FUNCTION_NAME __FUNCTION__
-
-#define LOG_DEBUG(format, ...) \
-    do { \
-        if (!g_isLoggingDisabled && (g_deBridgeDebug || g_deBridgeDebugExt)) { \
-            char buffer[256]; \
-            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
-            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
-            if (ShouldLog(message)) { \
-                sdk->logger->InfoF(pluginHandle, "%s", message.c_str()); \
-            } \
-        } \
-    } while(0)
-
-#define LOG_DEBUG_EXT(format, ...) \
-    do { \
-        if (!g_isLoggingDisabled && g_deBridgeDebugExt) { \
-            char buffer[256]; \
-            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
-            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
-            if (ShouldLog(message)) { \
-                sdk->logger->InfoF(pluginHandle, "%s", message.c_str()); \
-            } \
-        } \
-    } while(0)
-
-#define LOG_ERROR(format, ...) \
-    do { \
-        if (!g_isLoggingDisabled) { \
-            char buffer[256]; \
-            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
-            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
-            if (ShouldLog(message)) { \
-                sdk->logger->ErrorF(pluginHandle, "%s", message.c_str()); \
-            } \
-        } \
-    } while(0)
-
-#define LOG_WARN(format, ...) \
-    do { \
-        if (!g_isLoggingDisabled && (g_deBridgeDebug || g_deBridgeDebugExt)) { \
-            char buffer[256]; \
-            snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__); \
-            std::string message = std::string("[") + FUNCTION_NAME + "] " + buffer; \
-            if (ShouldLog(message)) { \
-                sdk->logger->WarnF(pluginHandle, "%s", message.c_str()); \
-            } \
-        } \
-    } while(0)
-
-// Log message constants
+// Constants
+const wchar_t* DLSS_ENABLER_DLL_NAME = L"dlss-enabler.dll";
 const char* LOG_MSG_CALLED = "Called!";
 const char* LOG_MSG_CALLED_SHOULD_ENABLE = "Called with shouldEnable = %s";
 const char* LOG_MSG_COMPLETED = "Completed";
@@ -82,32 +31,6 @@ const char* LOG_MSG_FUNC_SET_ADDR_FAILED = "Failed to get SetFrameGenerationMode
 const char* LOG_MSG_NULL_OUTPUT = "Output parameter is null";
 const char* LOG_MSG_TRUE = "true";
 const char* LOG_MSG_UNKNOWN = "Unknown";
-
-////////////////////////
-// DLSSEnabler's API 
-////////////////////////
-
-typedef enum DLSS_ENABLER_FRAMEGENERATION_MODE
-{
-    DLSS_ENABLER_FRAMEGENERATION_DISABLED = 0,
-    DLSS_ENABLER_FRAMEGENERATION_ENABLED = 1,
-    DLSS_ENABLER_FRAMEGENERATION_DFG_DISABLED = 2,
-    DLSS_ENABLER_FRAMEGENERATION_DFG_ENABLED = 3,
-} DLSS_ENABLER_FRAMEGENERATION_MODE;
-
-typedef enum DLSS_ENABLER_RESULT
-{
-    DLSS_ENABLER_RESULT_SUCCESS = 1,
-    DLSS_ENABLER_RESULT_FAIL_UNSUPPORTED = 0,
-    DLSS_ENABLER_RESULT_FAIL_BAD_ARGUMENT = -1,
-} DLSS_ENABLER_RESULT;
-
-typedef DLSS_ENABLER_RESULT(*GetFrameGenerationModeFunc)(DLSS_ENABLER_FRAMEGENERATION_MODE& mode);
-typedef DLSS_ENABLER_RESULT(*SetFrameGenerationModeFunc)(DLSS_ENABLER_FRAMEGENERATION_MODE mode);
-
-static HMODULE hDll;
-static GetFrameGenerationModeFunc g_GetFrameGenerationModeFunc = nullptr;
-static SetFrameGenerationModeFunc g_SetFrameGenerationModeFunc = nullptr;
 
 ////////////////////////
 // Restrict Logging: in case the modded Frame Generation goes *^(!$^% or methods are called excessively when FG is turned off in the game settings
@@ -358,7 +281,7 @@ void DLSSEnabler_GetFrameGenerationMode(RED4ext::IScriptable* aContext, RED4ext:
     else
     {
         LOG_ERROR("Failed to get Frame Generation Mode. Result: %d", result);
-        if (aOut) *aOut = -1;
+        if (aOut) *aOut = DLSS_ENABLER_RESULT_FAIL_UNSUPPORTED;
     }
 
     LOG_DEBUG_EXT(LOG_MSG_COMPLETED);
@@ -835,7 +758,7 @@ RED4EXT_C_EXPORT void RED4EXT_CALL Query(RED4ext::PluginInfo* aInfo)
 {
     aInfo->name = L"DLSS Enabler Bridge 2077";
     aInfo->author = L"gramern";
-    aInfo->version = RED4EXT_SEMVER(0, 4, 1);
+    aInfo->version = RED4EXT_SEMVER(0, 4, 2);
     aInfo->runtime = RED4EXT_RUNTIME_LATEST;
     aInfo->sdk = RED4EXT_SDK_LATEST;
 }

@@ -61,7 +61,7 @@ None
 `2`: Frame Generation Disabled; Dynamic Frame Generation Enabled
 `3`: Frame Generation Enabled; Dynamic Frame Generation Enabled
 
-Returns `-1` if the operation fails.
+Returns `0` if the operation fails.
 
 ### Exemplary Usage (CET-lua):
 ```

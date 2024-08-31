@@ -40,7 +40,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="DLSSEnablerBridge2077.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -52,6 +52,9 @@
   <ItemGroup>
     <ClInclude Include="..\resources\resource.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="DLSSEnablerBridge2077.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

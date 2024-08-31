@@ -120,10 +120,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DLSSEnablerBridge2077.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\resources\resource.h" />
+    <ClInclude Include="DLSSEnablerBridge2077.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\resources\VersionInfo.rc" />
