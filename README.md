@@ -20,12 +20,12 @@ See [methods.md](docs/methods.md) for details.
 You can use launch parameters for the game: `--de-bridge-debug` for the plugin's debug logging or `--de-bridge-debug-ext` for extended debug logging.
 
 ## Requirements
-+ Cyberpunk 2.12+
++ Cyberpunk 2.13
 + [DLSS Enabler](https://github.com/artur-graniszewski/DLSS-Enabler) 3.01.000.0+
-+ [RED4ext](https://github.com/WopsS/RED4ext) 1.25.0+
++ [RED4ext](https://github.com/WopsS/RED4ext) 1.25.1+
 
 For the optional CET tool:
-+ [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.32.0+
++ [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks) 1.33.0+
 
 ## Installation
 Place the `dlss-enabler-bridge-2077.dll` file in the `..\your Cyberpunk 2077 folder\red4ext\plugins\DLSSEnablerBridge2077` folder or unzip the archive to the game folder.
