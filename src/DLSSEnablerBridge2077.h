@@ -39,10 +39,22 @@ typedef enum DLSS_ENABLER_RESULT
 typedef DLSS_ENABLER_RESULT(*GetFrameGenerationModeFunc)(DLSS_ENABLER_FRAMEGENERATION_MODE& mode);
 typedef DLSS_ENABLER_RESULT(*SetFrameGenerationModeFunc)(DLSS_ENABLER_FRAMEGENERATION_MODE mode);
 
+// DLSSEnabler Module File Type
+typedef enum DLSS_ENABLER_FILETYPE
+{
+    DLSS_ENABLER_NONE = 0,
+    DLSS_ENABLER_DLL = 1,
+    DLSS_ENABLER_ASI = 2,
+} DLSS_ENABLER_FILETYPE;
+
+DLSS_ENABLER_FILETYPE GetInstalledFileType();
+const char* GetFileTypeString(DLSS_ENABLER_FILETYPE fileType);
+
 // External declarations
 extern const RED4ext::Sdk* sdk;
 extern RED4ext::PluginHandle pluginHandle;
-extern HMODULE hDll;
+extern HMODULE hModule;
+extern DLSS_ENABLER_FILETYPE g_installedFileType;
 extern GetFrameGenerationModeFunc g_GetFrameGenerationModeFunc;
 extern SetFrameGenerationModeFunc g_SetFrameGenerationModeFunc;
 extern bool g_isLoggingDisabled;
@@ -103,6 +115,7 @@ extern bool g_deBridgeDebugExt;
 
 // Constants
 extern const wchar_t* DLSS_ENABLER_DLL_NAME;
+extern const wchar_t* DLSS_ENABLER_ASI_NAME;
 extern const char* LOG_MSG_CALLED;
 extern const char* LOG_MSG_CALLED_SHOULD_ENABLE;
 extern const char* LOG_MSG_COMPLETED;
